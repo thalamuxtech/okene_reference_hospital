@@ -1,0 +1,91 @@
+import Link from 'next/link';
+import { Logo } from './logo';
+import { Phone, Mail, MapPin, Github } from 'lucide-react';
+
+export function SiteFooter() {
+  return (
+    <footer className="mt-24 border-t border-slate-200/70 bg-gradient-to-b from-white to-slate-50">
+      <div className="container py-16">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Logo />
+            <p className="mt-4 max-w-xs text-sm text-slate-600">
+              A modern medical platform built for the Kogi Central community. Online, offline, and
+              accessible to all.
+            </p>
+            <div className="mt-4 flex gap-3">
+              <a
+                href="https://github.com/thalamuxtech/okene_reference_hospital"
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:border-primary-500 hover:text-primary-600"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Care</h3>
+            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+              <li><Link href="/doctors" className="hover:text-primary-600">Find a doctor</Link></li>
+              <li><Link href="/specialties" className="hover:text-primary-600">Specialties</Link></li>
+              <li><Link href="/book" className="hover:text-primary-600">Book appointment</Link></li>
+              <li><Link href="/telehealth" className="hover:text-primary-600">Telehealth</Link></li>
+              <li><Link href="/triage" className="hover:text-primary-600">AI triage</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Patients</h3>
+            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+              <li><Link href="/auth/register" className="hover:text-primary-600">Register</Link></li>
+              <li><Link href="/auth/login" className="hover:text-primary-600">Sign in</Link></li>
+              <li><Link href="/dashboard" className="hover:text-primary-600">Patient dashboard</Link></li>
+              <li><Link href="/about" className="hover:text-primary-600">About us</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Contact</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-500" />
+                <span>Okene, Kogi State, Nigeria</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-500" />
+                <a href="tel:+2348000000000" className="hover:text-primary-600">
+                  +234 800 000 0000
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-500" />
+                <a href="mailto:care@okenehospital.ng" className="hover:text-primary-600">
+                  care@okenehospital.ng
+                </a>
+              </li>
+            </ul>
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-red-700">
+                Emergency hotline
+              </p>
+              <a href="tel:112" className="mt-1 block text-lg font-bold text-red-700">
+                112 · 24/7
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-slate-200/70 pt-8 text-xs text-slate-500 md:flex-row md:items-center">
+          <p>© {new Date().getFullYear()} Okene Reference Hospital. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-primary-600">Privacy</Link>
+            <Link href="/terms" className="hover:text-primary-600">Terms</Link>
+            <span>NDPR compliant · HIPAA-aligned</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn()   { return request.auth != null; }
+    function role()         { return request.auth.token.role; }
+    function isAdmin()      { return isSignedIn() && (role() == 'ADMIN' || role() == 'SUPER_ADMIN'); }
+    function isDoctor()     { return isSignedIn() && role() == 'DOCTOR'; }
+    function isStaff()      { return isSignedIn() && role() in ['ADMIN','SUPER_ADMIN','DOCTOR','NURSE','RECEPTIONIST']; }
+    function isSelf(uid)    { return isSignedIn() && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read:   if isSelf(uid) || isAdmin();
+      allow create: if isAdmin() || isSelf(uid);
+      allow update: if isSelf(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /patients/{patientId} {
+      allow read:   if isSignedIn() && (isSelf(resource.data.userId) || isStaff());
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (isSelf(resource.data.userId) || isStaff());
+      allow delete: if isAdmin();
+
+      match /{sub=**} {
+        allow read, write: if isStaff();
+      }
+    }
+
+    match /doctors/{doctorId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    match /doctorAvailability/{docId} {
+      allow read:  if true;
+      allow write: if isAdmin() || isDoctor();
+    }
+
+    match /appointments/{apptId} {
+      allow read:   if isStaff() || (isSignedIn() && (resource.data.patientUid == request.auth.uid || resource.data.doctorId == request.auth.uid));
+      allow create: if isSignedIn();
+      allow update: if isStaff() || resource.data.patientUid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /queueEntries/{id}   { allow read: if isSignedIn(); allow write: if isStaff(); }
+
+    match /triageAssessments/{id} {
+      allow read, write: if isSignedIn() && (isStaff() || resource.data.patientId == request.auth.uid);
+      allow create: if isSignedIn();
+    }
+
+    match /emergencies/{id} {
+      allow read:  if isStaff();
+      allow create: if isSignedIn();
+      allow update: if isStaff();
+    }
+
+    match /notifications/{id} {
+      allow read, update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isStaff();
+    }
+
+    match /auditLogs/{id} {
+      allow read: if isAdmin();
+      allow create: if isStaff();
+      allow update, delete: if false;
+    }
+
+    match /systemConfig/{key} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
