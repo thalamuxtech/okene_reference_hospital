@@ -21,21 +21,24 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Okene Reference Hospital — Premium Medical Care in Kogi Central',
+    default: 'Okene Reference Hospital — Premium Medical Care for Ebira Land & Kogi Central',
     template: '%s · Okene Reference Hospital'
   },
   description:
-    'Book appointments, consult doctors online and offline, access 24/7 emergency care. Trusted. Professional. Accessible.',
+    'The heart of healthcare in Okene. Book appointments, consult Nigeria\'s top specialists online or by SMS, and access 24/7 emergency care. Serving the Ebira people and all of Kogi State — Adavi, Okehi, Ajaokuta, Ihima, Ogori-Magongo and beyond.',
   keywords: [
-    'hospital',
-    'Okene',
-    'Kogi',
-    'Nigeria',
-    'appointment',
-    'telehealth',
-    'doctor',
-    'emergency',
-    'medical'
+    'Okene Reference Hospital',
+    'Okene hospital',
+    'Ebira health',
+    'Kogi Central hospital',
+    'Kogi State healthcare',
+    'Adavi',
+    'Ihima',
+    'Ajaokuta',
+    'Nigeria telehealth',
+    'Nigerian doctors',
+    'appointment booking Nigeria',
+    'emergency Kogi'
   ],
   metadataBase: new URL('https://okenereferencehospital.web.app'),
   openGraph: {

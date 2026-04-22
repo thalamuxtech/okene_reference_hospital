@@ -81,7 +81,7 @@ export default function TelehealthDemo() {
                 />
               </div>
               <p className="mt-5 text-xl font-bold">
-                Dr. {doctor.firstName} {doctor.lastName}
+                {doctor.title ?? 'Dr.'} {doctor.firstName} {doctor.lastName}
               </p>
               <p className="mt-1 text-sm text-slate-300">{doctor.specialization[0]}</p>
             </motion.div>

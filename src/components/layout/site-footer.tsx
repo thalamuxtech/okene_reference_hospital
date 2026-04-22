@@ -33,6 +33,7 @@ export function SiteFooter() {
               <li><Link href="/book" className="hover:text-primary-600">Book appointment</Link></li>
               <li><Link href="/telehealth" className="hover:text-primary-600">Telehealth</Link></li>
               <li><Link href="/triage" className="hover:text-primary-600">AI triage</Link></li>
+              <li><Link href="/arrival" className="hover:text-primary-600">Get queue ticket</Link></li>
             </ul>
           </div>
 

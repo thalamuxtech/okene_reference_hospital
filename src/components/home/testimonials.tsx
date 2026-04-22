@@ -7,28 +7,28 @@ import { Quote, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    name: 'Aisha Bello',
-    role: 'Mother of two, Okene',
-    photo: 'https://randomuser.me/api/portraits/women/65.jpg',
+    name: 'Ohunene Oseni',
+    role: 'Trader, Okene main market',
+    photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&auto=format',
     rating: 5,
     quote:
-      'Booking was two minutes on my phone. The doctor was kind, thorough, and the SMS reminders meant I never missed a follow-up.'
+      'I booked an appointment from my shop in two minutes. Dr. Omeiza Nuhu treated me like family, and the SMS reminders meant I never missed a single visit.'
   },
   {
-    name: 'Musa Ibrahim',
-    role: 'Retired teacher, Adavi',
-    photo: 'https://randomuser.me/api/portraits/men/75.jpg',
+    name: 'Alhaji Yakubu Ozigi',
+    role: 'Retired civil servant, Adavi',
+    photo: 'https://images.unsplash.com/photo-1521799022345-481a897e45ca?w=200&h=200&fit=crop&auto=format',
     rating: 5,
     quote:
-      'I live far from the hospital, so the telehealth option has been a lifesaver — literally. My heart medications are always on time now.'
+      'I live in Adavi and cannot travel easily. Telehealth with Prof. Avidime has been a lifeline — my blood pressure has never been better controlled.'
   },
   {
-    name: 'Grace Okoh',
+    name: 'Hadiza Inuwa',
     role: 'Student, Kogi State University',
-    photo: 'https://randomuser.me/api/portraits/women/33.jpg',
+    photo: 'https://images.unsplash.com/photo-1541823709867-1b206113eafd?w=200&h=200&fit=crop&auto=format',
     rating: 5,
     quote:
-      'The AI triage told me my symptoms needed urgent care and got me a slot the same day. I had never experienced healthcare this smooth.'
+      'The AI triage quickly flagged my symptoms as urgent and booked me the same day. My mother in Eika now uses the USSD code — it works on her old phone.'
   }
 ];
 
@@ -48,8 +48,8 @@ export function Testimonials() {
             Loved by the people we serve
           </h2>
           <p className="mt-4 text-base text-slate-300 lg:text-lg">
-            Real stories from patients across Kogi Central who now rely on Okene Reference Hospital
-            as their home for care.
+            Real stories from Ebira sons and daughters and neighbours across Kogi who now rely on
+            Okene Reference Hospital as their home for care.
           </p>
         </div>
 

@@ -39,7 +39,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
 
           <div className="flex-1 min-w-0">
             <h3 className="text-base font-bold text-slate-900">
-              Dr. {doctor.firstName} {doctor.lastName}
+              {doctor.title ?? 'Dr.'} {doctor.firstName} {doctor.lastName}
             </h3>
             <p className="mt-0.5 text-sm font-medium text-primary-600">
               {doctor.qualification.join(', ')}

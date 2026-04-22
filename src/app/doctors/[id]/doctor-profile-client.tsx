@@ -85,7 +85,7 @@ export default function DoctorProfileClient() {
               </div>
 
               <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-[44px] lg:leading-[1.1]">
-                Dr. {doctor.firstName} {doctor.lastName}
+                {doctor.title ?? 'Dr.'} {doctor.firstName} {doctor.lastName}
               </h1>
               <p className="mt-2 text-base text-primary-100 lg:text-lg">
                 {doctor.qualification.join(', ')} · {doctor.position} · {doctor.department}

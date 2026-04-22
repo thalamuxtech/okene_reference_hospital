@@ -353,7 +353,7 @@ function StepDoctor({
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-sm font-bold text-slate-900">
-                    Dr. {d.firstName} {d.lastName}
+                    {d.title ?? 'Dr.'} {d.firstName} {d.lastName}
                   </h3>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600">
                     <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
@@ -601,7 +601,7 @@ function StepConfirm({ state, doctor }: { state: State; doctor: Doctor }) {
               {specialty?.name}
             </p>
             <p className="text-base font-bold text-slate-900">
-              Dr. {doctor.firstName} {doctor.lastName}
+              {doctor.title ?? 'Dr.'} {doctor.firstName} {doctor.lastName}
             </p>
             <p className="text-xs text-slate-600">{doctor.qualification.join(', ')}</p>
           </div>
@@ -738,7 +738,7 @@ function BookingSuccess({
             <div className="flex justify-between">
               <dt className="text-slate-500">Doctor</dt>
               <dd className="font-semibold text-slate-900">
-                Dr. {doctor?.firstName} {doctor?.lastName}
+                {doctor?.title ?? 'Dr.'} {doctor?.firstName} {doctor?.lastName}
               </dd>
             </div>
             <div className="flex justify-between">

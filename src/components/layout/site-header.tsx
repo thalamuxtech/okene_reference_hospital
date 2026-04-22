@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Calendar, Stethoscope, Activity, Phone } from 'lucide-react';
+import { Menu, X, Calendar, Phone } from 'lucide-react';
 import { Logo } from './logo';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +16,9 @@ const NAV = [
   { href: '/triage', label: 'AI Triage' },
   { href: '/about', label: 'About' }
 ];
+
+// Routes whose pages start with a dark hero — header should render light-on-dark at the top.
+const DARK_HERO_ROUTES = ['/', '/telehealth', '/emergency', '/admin/login'];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -33,17 +36,22 @@ export function SiteHeader() {
     setMobileOpen(false);
   }, [pathname]);
 
+  const onDarkHero = DARK_HERO_ROUTES.includes(pathname);
+  const light = onDarkHero && !scrolled;
+
   return (
     <header
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
         scrolled
           ? 'border-b border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-sm'
+          : light
+          ? 'bg-transparent'
           : 'bg-transparent'
       )}
     >
       <div className="container flex h-16 items-center justify-between lg:h-20">
-        <Logo />
+        <Logo variant={light ? 'light' : 'default'} />
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) => {
@@ -54,13 +62,18 @@ export function SiteHeader() {
                 href={item.href}
                 className={cn(
                   'relative rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                  active ? 'text-primary-600' : 'text-slate-700 hover:text-primary-600'
+                  active
+                    ? light ? 'text-white' : 'text-primary-600'
+                    : light ? 'text-white/80 hover:text-white' : 'text-slate-700 hover:text-primary-600'
                 )}
               >
                 {active && (
                   <motion.span
                     layoutId="nav-active"
-                    className="absolute inset-0 rounded-lg bg-primary-50"
+                    className={cn(
+                      'absolute inset-0 rounded-lg',
+                      light ? 'bg-white/10' : 'bg-primary-50'
+                    )}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -71,10 +84,24 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/auth/login" className="btn-ghost">
+          <Link
+            href="/auth/login"
+            className={cn(
+              'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+              light ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-slate-700 hover:bg-slate-100'
+            )}
+          >
             Sign in
           </Link>
-          <Link href="/book" className="btn-primary">
+          <Link
+            href="/book"
+            className={cn(
+              'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]',
+              light
+                ? 'bg-white text-slate-900 shadow-lg hover:shadow-xl'
+                : 'bg-primary-500 text-white shadow-sm hover:bg-primary-600 hover:shadow-md'
+            )}
+          >
             <Calendar className="h-4 w-4" />
             Book Appointment
           </Link>
@@ -82,7 +109,10 @@ export function SiteHeader() {
 
         <button
           aria-label="Open menu"
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 lg:hidden"
+          className={cn(
+            'rounded-lg p-2 lg:hidden',
+            light ? 'text-white hover:bg-white/10' : 'text-slate-700 hover:bg-slate-100'
+          )}
           onClick={() => setMobileOpen((v) => !v)}
         >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

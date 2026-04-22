@@ -51,7 +51,7 @@ export default function AdminDoctorsPage() {
             <div className="-mt-10 p-5">
               <Image src={d.photoURL} alt={d.firstName} width={72} height={72} className="h-[72px] w-[72px] rounded-full object-cover ring-4 ring-white" />
               <h3 className="mt-3 text-base font-bold text-slate-900">
-                Dr. {d.firstName} {d.lastName}
+                {d.title ?? 'Dr.'} {d.firstName} {d.lastName}
               </h3>
               <p className="mt-0.5 text-xs text-primary-600">{d.qualification.join(', ')}</p>
               <p className="mt-0.5 text-xs text-slate-600">{d.department}</p>

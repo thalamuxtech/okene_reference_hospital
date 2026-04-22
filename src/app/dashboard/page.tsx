@@ -53,7 +53,7 @@ export default function DashboardPage() {
               Good afternoon
             </p>
             <h1 className="mt-1 text-3xl font-bold text-slate-900 sm:text-4xl">
-              Welcome back, <span className="text-gradient">Ibrahim</span>
+              Welcome back, <span className="text-gradient">Omeiza</span>
             </h1>
             <p className="mt-1 text-sm text-slate-600">
               Here’s what’s happening with your care today.
@@ -124,7 +124,7 @@ export default function DashboardPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-sm font-bold text-slate-900">
-                          Dr. {u.doctor.firstName} {u.doctor.lastName}
+                          {u.doctor.title ?? 'Dr.'} {u.doctor.firstName} {u.doctor.lastName}
                         </h3>
                         <Badge variant={u.status === 'confirmed' ? 'success' : 'info'}>
                           {u.status === 'confirmed' && <CheckCircle2 className="h-3 w-3" />}

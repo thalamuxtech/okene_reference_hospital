@@ -18,7 +18,8 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Ticket
 } from 'lucide-react';
 import { Logo } from '@/components/layout/logo';
 import { isAdminSignedIn, signOutAdmin, ADMIN_EMAIL } from '@/lib/admin-auth';
@@ -26,6 +27,7 @@ import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/admin/tickets', icon: Ticket, label: 'Tickets' },
   { href: '/admin/appointments', icon: CalendarDays, label: 'Appointments' },
   { href: '/admin/doctors', icon: Stethoscope, label: 'Doctors' },
   { href: '/admin/patients', icon: Users, label: 'Patients' },

@@ -13,7 +13,7 @@ export function SpecialtiesSection() {
         <SectionHeader
           eyebrow="Specialties"
           title="World-class care across disciplines"
-          description="From cardiology to paediatrics, our specialists bring decades of combined experience backed by modern clinical technology."
+          description="From cardiology to paediatrics, our specialists bring decades of combined experience — the kind of care Ebira families have trusted for nearly three decades."
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

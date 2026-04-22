@@ -20,12 +20,14 @@ export default function AboutPage() {
               </div>
               <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-[64px] lg:leading-[1.05]">
                 Healthcare rooted in{' '}
-                <span className="text-gradient">Kogi.</span> Built for the world.
+                <span className="text-gradient">Ebira land.</span> Built for the world.
               </h1>
               <p className="mt-6 text-base text-slate-600 lg:text-lg">
-                Okene Reference Hospital combines 25+ years of clinical experience with a modern,
-                patient-first digital platform — so quality care is never more than a tap, a text,
-                or a call away.
+                Okene Reference Hospital has been the heart of healthcare in Okene and the
+                surrounding Ebira communities for over 27 years. We combine deep clinical experience
+                with a modern, patient-first digital platform — so quality care is never more than
+                a tap, a text, or a call away, whether you are in Okene, Adavi, Okehi, Ihima,
+                Ajaokuta or anywhere else in Kogi State.
               </p>
             </div>
           </Reveal>
@@ -53,7 +55,7 @@ export default function AboutPage() {
                   { icon: Heart, label: 'Compassion', desc: 'Every patient matters.' },
                   { icon: Target, label: 'Excellence', desc: 'Clinical and service standards.' },
                   { icon: ShieldCheck, label: 'Trust', desc: 'Privacy and safety first.' },
-                  { icon: Users, label: 'Community', desc: 'Serving Kogi Central.' }
+                  { icon: Users, label: 'Community', desc: 'Serving Ebira land and beyond.' }
                 ].map((v) => (
                   <div key={v.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <v.icon className="h-5 w-5 text-primary-600" />
@@ -70,7 +72,7 @@ export default function AboutPage() {
               <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-primary-100 to-navy-100 blur-xl" />
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { v: '25+', l: 'Years serving Kogi' },
+                  { v: '27+', l: 'Years serving Okene' },
                   { v: '50+', l: 'Specialists' },
                   { v: '100k+', l: 'Patients treated' },
                   { v: '15+', l: 'Specialties' }

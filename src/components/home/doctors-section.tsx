@@ -11,7 +11,7 @@ export function DoctorsSection() {
       <SectionHeader
         eyebrow="Meet the team"
         title="Specialists you can trust"
-        description="Board-certified doctors, rigorous credentialing and decades of clinical experience serving the Kogi Central community."
+        description="Led by Prof. Salihu Avidime, Dr. Omeiza Nuhu and an elite team — Nigeria's best, serving Okene and the Ebira community with pride."
       />
 
       <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

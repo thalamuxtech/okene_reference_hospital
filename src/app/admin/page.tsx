@@ -29,11 +29,11 @@ const kpis = [
 ];
 
 const liveAppointments = [
-  { time: '10:30', patient: 'Ibrahim M.', doctor: 'Dr. Hassan', department: 'Cardiology', status: 'in_progress' },
-  { time: '10:45', patient: 'Fatima K.', doctor: 'Dr. Musa', department: 'Pediatrics', status: 'checked_in' },
-  { time: '11:00', patient: 'Samuel O.', doctor: 'Dr. Bello', department: 'Orthopedics', status: 'scheduled' },
-  { time: '11:15', patient: 'Grace A.', doctor: 'Dr. Okoro', department: 'Neurology', status: 'scheduled' },
-  { time: '11:30', patient: 'Aisha B.', doctor: 'Dr. Sani', department: 'General', status: 'telehealth' }
+  { time: '10:30', patient: 'Ozavize A.', doctor: 'Dr. Nuhu', department: 'Cardiology', status: 'in_progress' },
+  { time: '10:45', patient: 'Onyeche I.', doctor: 'Dr. Ohiare', department: 'Pediatrics', status: 'checked_in' },
+  { time: '11:00', patient: 'Ohunene O.', doctor: 'Dr. Attah', department: 'Orthopedics', status: 'scheduled' },
+  { time: '11:15', patient: 'Halima A.', doctor: 'Dr. Yusuf', department: 'Neurology', status: 'scheduled' },
+  { time: '11:30', patient: 'Eneojo O.', doctor: 'Dr. Ozigi', department: 'General', status: 'telehealth' }
 ];
 
 export default function AdminHome() {
@@ -152,7 +152,7 @@ export default function AdminHome() {
                 <Image src={d.photoURL} alt={d.firstName} width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-slate-900">
-                    Dr. {d.firstName} {d.lastName}
+                    {d.title ?? 'Dr.'} {d.firstName} {d.lastName}
                   </p>
                   <p className="truncate text-xs text-slate-500">{d.specialization[0]}</p>
                 </div>

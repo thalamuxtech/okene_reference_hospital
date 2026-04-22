@@ -16,7 +16,7 @@ type Status = 'scheduled' | 'checked_in' | 'in_progress' | 'completed' | 'cancel
 const APPOINTMENTS = Array.from({ length: 18 }).map((_, i) => {
   const d = DOCTORS[i % DOCTORS.length];
   const statuses: Status[] = ['scheduled', 'checked_in', 'in_progress', 'completed', 'cancelled', 'no_show'];
-  const names = ['Ibrahim Musa', 'Fatima Kabir', 'Samuel Okoro', 'Grace Ayodele', 'Aisha Bello', 'Musa Idris', 'Chiamaka Eze', 'Tunde Adewale'];
+  const names = ['Ozavize Adaviruku', 'Onyeche Idakwoji', 'Ohunene Oseni', 'Halima Abdul', 'Eneojo Okoliko', 'Aisha Suleman', 'Yakubu Ozigi', 'Sekinat Inusa', 'Michael Ajala', 'Zeinab Aboki'];
   const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '14:00', '14:30', '15:00'];
   return {
     id: `APT-2026-${(10000 + i).toString()}`,

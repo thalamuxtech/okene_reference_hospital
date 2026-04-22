@@ -8,7 +8,7 @@ import { Plus, Search, MoreVertical, FileText } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const PATIENTS = Array.from({ length: 24 }).map((_, i) => {
-  const names = ['Ibrahim Musa', 'Fatima Kabir', 'Samuel Okoro', 'Grace Ayodele', 'Aisha Bello', 'Musa Idris', 'Chiamaka Eze', 'Tunde Adewale', 'Hauwa Aliyu', 'Chinedu Okafor'];
+  const names = ['Ozavize Adaviruku', 'Onyeche Idakwoji', 'Ohunene Oseni', 'Halima Abdul', 'Eneojo Okoliko', 'Aisha Suleman', 'Yakubu Ozigi', 'Sekinat Inusa', 'Michael Ajala', 'Zeinab Aboki', 'Omeiza Yahaya', 'Hauwa Aliyu'];
   const name = names[i % names.length];
   const initials = name.split(' ').map((n) => n[0]).join('');
   return {

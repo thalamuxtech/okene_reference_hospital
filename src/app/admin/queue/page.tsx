@@ -10,30 +10,30 @@ import { Badge } from '@/components/ui/badge';
 type Entry = { id: string; number: string; patient: string; priority: 0 | 1 | 2; waitMin: number };
 
 const DEPARTMENTS = [
-  { code: 'A', name: 'Cardiology', now: 'A-124', doctor: 'Dr. Musa', color: 'from-rose-500 to-red-600' },
-  { code: 'B', name: 'Pediatrics', now: 'B-087', doctor: 'Dr. Hassan', color: 'from-sky-500 to-cyan-600' },
-  { code: 'C', name: 'Orthopedics', now: 'C-042', doctor: 'Dr. Bello', color: 'from-amber-500 to-orange-600' },
-  { code: 'D', name: 'General', now: 'D-211', doctor: 'Dr. Sani', color: 'from-primary-500 to-teal-600' }
+  { code: 'A', name: 'Cardiology', now: 'A-124', doctor: 'Dr. Omeiza Nuhu', color: 'from-rose-500 to-red-600' },
+  { code: 'B', name: 'Pediatrics', now: 'B-087', doctor: 'Dr. Ohiare', color: 'from-sky-500 to-cyan-600' },
+  { code: 'C', name: 'Orthopedics', now: 'C-042', doctor: 'Dr. Attah', color: 'from-amber-500 to-orange-600' },
+  { code: 'D', name: 'General', now: 'D-211', doctor: 'Dr. Ozigi', color: 'from-primary-500 to-teal-600' }
 ];
 
 const INITIAL: Record<string, Entry[]> = {
   A: [
-    { id: 'A-125', number: 'A-125', patient: 'Ibrahim M.', priority: 0, waitMin: 6 },
-    { id: 'A-126', number: 'A-126', patient: 'Fatima K.', priority: 1, waitMin: 14 },
-    { id: 'A-127', number: 'A-127', patient: 'Samuel O.', priority: 0, waitMin: 22 }
+    { id: 'A-125', number: 'A-125', patient: 'Ozavize A.', priority: 0, waitMin: 6 },
+    { id: 'A-126', number: 'A-126', patient: 'Onyeche I.', priority: 1, waitMin: 14 },
+    { id: 'A-127', number: 'A-127', patient: 'Yakubu O.', priority: 0, waitMin: 22 }
   ],
   B: [
-    { id: 'B-088', number: 'B-088', patient: 'Grace A.', priority: 0, waitMin: 4 },
-    { id: 'B-089', number: 'B-089', patient: 'Chinedu O.', priority: 0, waitMin: 10 }
+    { id: 'B-088', number: 'B-088', patient: 'Halima A.', priority: 0, waitMin: 4 },
+    { id: 'B-089', number: 'B-089', patient: 'Ohunene O.', priority: 0, waitMin: 10 }
   ],
   C: [
-    { id: 'C-043', number: 'C-043', patient: 'Aisha B.', priority: 2, waitMin: 0 },
-    { id: 'C-044', number: 'C-044', patient: 'Hauwa A.', priority: 0, waitMin: 18 }
+    { id: 'C-043', number: 'C-043', patient: 'Eneojo O.', priority: 2, waitMin: 0 },
+    { id: 'C-044', number: 'C-044', patient: 'Sekinat I.', priority: 0, waitMin: 18 }
   ],
   D: [
-    { id: 'D-212', number: 'D-212', patient: 'Tunde A.', priority: 0, waitMin: 3 },
-    { id: 'D-213', number: 'D-213', patient: 'Chiamaka E.', priority: 0, waitMin: 12 },
-    { id: 'D-214', number: 'D-214', patient: 'Musa I.', priority: 1, waitMin: 24 }
+    { id: 'D-212', number: 'D-212', patient: 'Zeinab A.', priority: 0, waitMin: 3 },
+    { id: 'D-213', number: 'D-213', patient: 'Omeiza Y.', priority: 0, waitMin: 12 },
+    { id: 'D-214', number: 'D-214', patient: 'Aisha S.', priority: 1, waitMin: 24 }
   ]
 };
 
