@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Logo } from './logo';
-import { Phone, Mail, MapPin, Github } from 'lucide-react';
+import { Phone, Mail, MapPin, Github, ShieldCheck } from 'lucide-react';
 
 export function SiteFooter() {
   return (
@@ -77,9 +77,22 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-slate-200/70 pt-8 text-xs text-slate-500 md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} Okene Reference Hospital. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+        <div className="mt-12 grid grid-cols-1 items-center gap-4 border-t border-slate-200/70 pt-8 text-xs text-slate-500 md:grid-cols-3">
+          <p className="md:text-left">© {new Date().getFullYear()} Okene Reference Hospital. All rights reserved.</p>
+
+          <div className="flex justify-center">
+            <Link
+              href="/admin/login"
+              aria-label="Staff portal"
+              title="Staff portal"
+              className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition-all hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 hover:shadow-sm"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Staff portal</span>
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-start gap-4 md:justify-end">
             <Link href="/privacy" className="hover:text-primary-600">Privacy</Link>
             <Link href="/terms" className="hover:text-primary-600">Terms</Link>
             <span>NDPR compliant · HIPAA-aligned</span>
