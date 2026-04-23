@@ -1,7 +1,7 @@
 'use client';
 
-import { notFound, useParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -15,24 +15,55 @@ import {
   MapPin,
   Award,
   BookOpen,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
-import { DOCTORS, generateTimeSlots } from '@/lib/seed-data';
+import { DOCTORS, generateTimeSlots, type Doctor } from '@/lib/seed-data';
+import { useDoctorsStore } from '@/lib/doctors-store';
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export default function DoctorProfileClient() {
-  const { id } = useParams<{ id: string }>();
-  const doctor = DOCTORS.find((d) => d.id === id);
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
+
+  // Hydrate from persisted admin-edited store, fall back to seed. Only merge
+  // after mount so we never render a mismatched tree during SSG hydration.
+  const storeDoctors = useDoctorsStore((s) => s.doctors);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
+  const pool: Doctor[] = hydrated && storeDoctors.length > 0 ? storeDoctors : DOCTORS;
+  const doctor = pool.find((d) => d.id === id);
+
   const [tab, setTab] = useState<'about' | 'availability' | 'reviews'>('about');
 
-  if (!doctor) return notFound();
-
   const slots = useMemo(
-    () => generateTimeSlots(doctor.workingHours.start, doctor.workingHours.end).slice(0, 8),
+    () =>
+      doctor
+        ? generateTimeSlots(doctor.workingHours.start, doctor.workingHours.end).slice(0, 8)
+        : [],
     [doctor]
   );
+
+  if (!doctor) {
+    return (
+      <div className="container min-h-[60vh] py-20 text-center">
+        <h1 className="text-3xl font-bold text-slate-900">Doctor not found</h1>
+        <p className="mt-2 text-slate-600">
+          The doctor you are looking for does not exist or may have been removed.
+        </p>
+        <Link
+          href="/doctors"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border-2 border-primary-500 bg-white px-5 py-2.5 text-sm font-semibold text-primary-600 hover:bg-primary-50"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to doctors
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
