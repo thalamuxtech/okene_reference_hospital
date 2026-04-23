@@ -290,8 +290,13 @@ function LiveClock({ date }: { date: Date }) {
           {s}
         </motion.span>
       </div>
-      <p className="mt-1 text-right text-[10px] uppercase tracking-[0.22em] text-white/50">
-        {date.toLocaleDateString('en-NG', { weekday: 'short', day: 'numeric', month: 'short' })}
+      <p className="mt-1 text-center text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
+        {date.toLocaleDateString('en-NG', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        })}
       </p>
     </div>
   );
