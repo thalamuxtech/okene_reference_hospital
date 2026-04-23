@@ -8,8 +8,8 @@ export function SiteFooter() {
       <div className="container py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Logo />
-            <p className="mt-4 max-w-xs text-sm text-slate-600">
+            <Logo size={64} wordmarkSize="lg" />
+            <p className="mt-5 max-w-xs text-sm text-slate-600">
               A modern medical platform built for the Kogi Central community. Online, offline, and
               accessible to all.
             </p>

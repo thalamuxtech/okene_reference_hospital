@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
             animate={{ opacity: 1, x: 0 }}
             className="hidden text-white lg:block"
           >
-            <Logo variant="light" />
+            <Logo variant="light" size={56} wordmarkSize="lg" />
             <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-primary-400/30 bg-primary-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary-100 backdrop-blur">
               <ShieldCheck className="h-3.5 w-3.5" /> Staff portal · Restricted
             </div>
@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
           >
             <div className="rounded-2xl border border-white/10 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
               <div className="mb-6 flex items-center justify-between">
-                <Logo />
+                <Logo size={48} />
                 <span className="inline-flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                   <ShieldCheck className="h-3 w-3" />
                   Admin

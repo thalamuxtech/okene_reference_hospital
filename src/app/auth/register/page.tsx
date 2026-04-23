@@ -91,7 +91,7 @@ export default function RegisterPage() {
       className="rounded-2xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur-xl sm:p-8"
     >
       <div className="mb-6 flex items-center justify-between">
-        <Logo />
+        <Logo size={48} />
         <Link href="/auth/login" className="text-xs font-semibold text-primary-600 hover:underline">
           Have an account?
         </Link>

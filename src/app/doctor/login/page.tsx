@@ -108,7 +108,7 @@ export default function DoctorLoginPage() {
             <div className="rounded-2xl border border-white/10 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
               <div className="mb-6 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3">
-                  <HospitalShield className="h-10 w-10" />
+                  <HospitalShield size={52} className="h-13 w-13" />
                   <span className="text-sm font-bold text-slate-900">Okene Reference</span>
                 </Link>
                 <span className="inline-flex items-center gap-1 rounded-full bg-primary-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">

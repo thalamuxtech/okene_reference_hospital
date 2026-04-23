@@ -103,8 +103,8 @@ export function AdminShell({ children, title }: { children: ReactNode; title: st
       >
         <div className={cn('flex h-16 items-center border-b border-slate-200', collapsed ? 'justify-center px-3' : 'px-5')}>
           <Link href="/admin" className="flex items-center gap-3 group">
-            <span className="block h-9 w-9 transition-transform group-hover:scale-105">
-              <HospitalShield className="h-9 w-9" />
+            <span className="block transition-transform group-hover:scale-105">
+              <HospitalShield size={44} className="h-11 w-11" />
             </span>
             <AnimatePresence initial={false}>
               {!collapsed && (
@@ -222,7 +222,7 @@ export function AdminShell({ children, title }: { children: ReactNode; title: st
             >
               <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
                 <Link href="/admin" className="flex items-center gap-2">
-                  <HospitalShield className="h-8 w-8" />
+                  <HospitalShield size={36} className="h-9 w-9" />
                   <span className="text-sm font-bold text-slate-900">Admin</span>
                 </Link>
                 <button

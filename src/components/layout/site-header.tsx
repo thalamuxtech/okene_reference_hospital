@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Calendar, Phone } from 'lucide-react';
-import { Logo } from './logo';
+import { HospitalShield } from './logo';
 import { cn } from '@/lib/utils';
 
 const NAV = [
@@ -17,8 +17,15 @@ const NAV = [
   { href: '/about', label: 'About' }
 ];
 
-// Routes whose pages start with a dark hero — header should render light-on-dark at the top.
-const DARK_HERO_ROUTES = ['/', '/telehealth', '/emergency', '/admin/login', '/doctor/login', '/arrival'];
+// Routes that start on a dark hero — header renders light-on-dark until scrolled.
+const DARK_HERO_ROUTES = [
+  '/',
+  '/telehealth',
+  '/emergency',
+  '/admin/login',
+  '/doctor/login',
+  '/arrival'
+];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -39,19 +46,78 @@ export function SiteHeader() {
   const onDarkHero = DARK_HERO_ROUTES.includes(pathname);
   const light = onDarkHero && !scrolled;
 
+  // Oversized at rest, smoothly shrinks on scroll.
+  // Mobile gets a slightly smaller hang so it still fits 360 px screens.
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)');
+    const apply = () => setIsDesktop(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+  const logoSize = scrolled ? (isDesktop ? 56 : 44) : isDesktop ? 108 : 76;
+
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 transition-all duration-300',
+        'sticky top-0 z-50 transition-all duration-500',
         scrolled
-          ? 'border-b border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-sm'
-          : light
-          ? 'bg-transparent'
+          ? 'border-b border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-sm'
           : 'bg-transparent'
       )}
     >
-      <div className="container flex h-16 items-center justify-between lg:h-20">
-        <Logo variant={light ? 'light' : 'default'} />
+      <div
+        className={cn(
+          'container relative flex items-center justify-between transition-all duration-500',
+          scrolled ? 'h-20' : 'h-24 lg:h-28'
+        )}
+      >
+        {/* Logo slot — oversized logo hangs ~60% below the bar when at rest. */}
+        <Link href="/" aria-label="Okene Reference Hospital — home" className="relative flex items-center gap-3 group">
+          <motion.span
+            initial={false}
+            animate={{
+              y: scrolled ? 0 : '30%',
+              width: logoSize,
+              height: logoSize
+            }}
+            transition={{ type: 'spring', stiffness: 220, damping: 26 }}
+            className="relative block overflow-visible"
+          >
+            <HospitalShield
+              size={logoSize}
+              className={cn(
+                'h-full w-full transition-shadow duration-500',
+                !scrolled && 'drop-shadow-[0_14px_30px_rgba(12,38,107,0.45)]'
+              )}
+            />
+          </motion.span>
+          <motion.span
+            initial={false}
+            animate={{ opacity: scrolled ? 1 : 0.95 }}
+            className="flex flex-col leading-none"
+          >
+            <span
+              className={cn(
+                'font-bold tracking-tight transition-all duration-500',
+                scrolled ? 'text-[15px]' : 'text-[17px] lg:text-[19px]',
+                light ? 'text-white' : 'text-slate-900'
+              )}
+            >
+              Okene Reference
+            </span>
+            <span
+              className={cn(
+                'mt-1 font-semibold uppercase tracking-[0.22em] transition-all duration-500',
+                scrolled ? 'text-[11px]' : 'text-[12px]',
+                light ? 'text-primary-200' : 'text-primary-600'
+              )}
+            >
+              Hospital
+            </span>
+          </motion.span>
+        </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) => {
