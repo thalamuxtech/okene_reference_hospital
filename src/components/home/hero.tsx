@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import {
@@ -268,16 +267,9 @@ function HeroPortrait({ y }: { y: any }) {
         className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-2 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.6)] backdrop-blur-md"
       >
         <div className="relative overflow-hidden rounded-[26px]">
-          {/* Portrait */}
-          <div className="relative aspect-[4/5] w-full overflow-hidden">
-            <Image
-              src="https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=900&h=1200&fit=crop&auto=format"
-              alt="Nigerian consultant physician at Okene Reference Hospital"
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover"
-            />
+          {/* Portrait — custom SVG medical illustration */}
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-primary-600 via-navy-700 to-slate-900">
+            <HeroMedicalArt />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
 
             {/* Doctor card overlay */}
@@ -294,11 +286,11 @@ function HeroPortrait({ y }: { y: any }) {
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-primary-200">
                   Featured consultant
                 </p>
-                <p className="truncate text-sm font-bold text-white">Dr. Zainab Ozigi · Family Medicine</p>
+                <p className="truncate text-sm font-bold text-white">Prof. Salihu Avidime · CMD</p>
               </div>
               <div className="flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-[10px] font-bold text-amber-300">
                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                4.78
+                4.95
               </div>
             </motion.div>
           </div>
@@ -420,5 +412,133 @@ function HeroPortrait({ y }: { y: any }) {
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+/**
+ * Custom premium medical illustration used in the hero.
+ * Pure SVG — always loads, no external dependency, perfectly on-brand.
+ * Features: stylised doctor silhouette in teal/navy, stethoscope curl,
+ * soft radial halos and a large medical cross monogram.
+ */
+function HeroMedicalArt() {
+  return (
+    <div className="absolute inset-0">
+      {/* Decorative radial halo */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(circle at 50% 35%, rgba(253, 186, 116, 0.22), transparent 55%), radial-gradient(circle at 30% 80%, rgba(56, 197, 197, 0.28), transparent 55%)'
+        }}
+      />
+
+      <svg
+        viewBox="0 0 400 500"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute inset-0 h-full w-full"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <linearGradient id="coat" x1="80" y1="200" x2="320" y2="500" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#FFFFFF" />
+            <stop offset="1" stopColor="#E6FFFD" />
+          </linearGradient>
+          <linearGradient id="skin" x1="140" y1="110" x2="260" y2="240" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#6B4226" />
+            <stop offset="1" stopColor="#4A2E1C" />
+          </linearGradient>
+          <linearGradient id="bg-glow" x1="0" y1="0" x2="400" y2="500" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#0E7E7E" stopOpacity=".35" />
+            <stop offset="1" stopColor="#12266B" stopOpacity=".1" />
+          </linearGradient>
+          <radialGradient id="crossGlow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stopColor="#FFFFFF" stopOpacity=".28" />
+            <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* Background glow disc */}
+        <circle cx="200" cy="250" r="220" fill="url(#bg-glow)" />
+        <circle cx="200" cy="230" r="180" fill="url(#crossGlow)" />
+
+        {/* Large watermark medical cross */}
+        <g opacity=".08">
+          <rect x="180" y="60" width="40" height="380" rx="8" fill="#FFFFFF" />
+          <rect x="40" y="200" width="320" height="40" rx="8" fill="#FFFFFF" />
+        </g>
+
+        {/* Body / coat */}
+        <motion.g
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.5 }}
+        >
+          {/* Shoulders / torso */}
+          <path
+            d="M120 470 Q110 340 155 300 L165 260 Q180 246 200 246 Q220 246 235 260 L245 300 Q290 340 280 470 Z"
+            fill="url(#coat)"
+          />
+          {/* Collar V */}
+          <path d="M175 260 L200 310 L225 260 L235 275 L200 335 L165 275 Z" fill="#0E7E7E" />
+          {/* Stethoscope */}
+          <path
+            d="M195 295 C180 330 175 370 205 385 Q240 400 245 370"
+            fill="none"
+            stroke="#0A1628"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <circle cx="246" cy="366" r="8" fill="#0A1628" />
+          <circle cx="246" cy="366" r="3" fill="#38C5C5" />
+
+          {/* Neck */}
+          <rect x="188" y="224" width="24" height="36" rx="6" fill="url(#skin)" />
+          {/* Head */}
+          <circle cx="200" cy="188" r="42" fill="url(#skin)" />
+          {/* Hair — close-cropped */}
+          <path
+            d="M160 180 Q165 148 200 146 Q235 148 240 180 Q232 164 200 164 Q168 164 160 180 Z"
+            fill="#0A1628"
+          />
+          {/* ID badge */}
+          <g>
+            <rect x="155" y="335" width="34" height="46" rx="4" fill="#FFFFFF" stroke="#CBD5E1" />
+            <rect x="160" y="340" width="24" height="14" rx="2" fill="#0E7E7E" />
+            <line x1="160" y1="360" x2="184" y2="360" stroke="#CBD5E1" strokeWidth="1.5" />
+            <line x1="160" y1="366" x2="178" y2="366" stroke="#E2E8F0" strokeWidth="1.5" />
+            <line x1="160" y1="372" x2="180" y2="372" stroke="#E2E8F0" strokeWidth="1.5" />
+          </g>
+        </motion.g>
+
+        {/* Floating icons — vitals */}
+        <motion.g
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+        >
+          {/* Pulse line */}
+          <rect x="50" y="90" width="100" height="36" rx="10" fill="#0A1628" opacity=".65" />
+          <motion.path
+            d="M60 108 L75 108 L80 96 L86 122 L92 90 L98 122 L104 108 L140 108"
+            fill="none"
+            stroke="#34D399"
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: [0, 1, 1] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'linear' }}
+          />
+
+          {/* Syringe-like chip */}
+          <g transform="translate(300 120)">
+            <rect width="56" height="36" rx="10" fill="#FDBA74" opacity=".9" />
+            <circle cx="16" cy="18" r="6" fill="#0A1628" />
+            <rect x="26" y="16" width="24" height="4" rx="2" fill="#0A1628" />
+          </g>
+        </motion.g>
+      </svg>
+    </div>
   );
 }

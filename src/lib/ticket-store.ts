@@ -11,32 +11,44 @@ export type TicketStatus =
   | 'skipped'
   | 'cancelled';
 
+export type ConsultationNote = {
+  chiefComplaint?: string;
+  vitals?: { bp?: string; pulse?: string; temp?: string; weight?: string };
+  diagnosis?: string;
+  treatmentPlan?: string;
+  prescription?: string;
+  followUpDate?: string;
+  notes?: string;
+  savedAt?: number;
+};
+
 export type Ticket = {
   id: string;
-  number: string; // e.g. A-127
-  department: string; // Cardiology, Pediatrics …
-  deptCode: string; // A, B, C …
+  number: string;
+  department: string;
+  deptCode: string;
   patientName: string;
   phone?: string;
-  priority: 0 | 1 | 2; // 0 normal · 1 priority · 2 emergency
+  priority: 0 | 1 | 2;
   status: TicketStatus;
-  counter?: number; // assigned counter number (1..N)
+  counter?: number;
   doctorId?: string;
   doctorName?: string;
-  arrivedAt: number; // epoch ms
+  arrivedAt: number;
   calledAt?: number;
   consultStartAt?: number;
   completedAt?: number;
-  calledExpiresAt?: number; // for the 2-min "please come to counter" countdown
+  calledExpiresAt?: number;
   estimatedWaitMin?: number;
+  consultationNote?: ConsultationNote;
 };
 
 export type CounterStatus = {
-  counter: number; // 1..N
+  counter: number;
   department: string;
   doctorId: string | null;
   doctorName: string | null;
-  available: boolean; // doctor available & free
+  available: boolean;
   currentTicketId: string | null;
 };
 
@@ -54,6 +66,7 @@ type State = {
   startConsultation: (ticketId: string) => void;
   completeConsultation: (counter: number) => void;
   skipTicket: (ticketId: string) => void;
+  updateConsultationNote: (ticketId: string, note: ConsultationNote) => void;
   setCounterAvailability: (counter: number, available: boolean) => void;
   assignDoctorToCounter: (
     counter: number,
@@ -61,7 +74,18 @@ type State = {
     doctorName: string | null,
     department?: string
   ) => void;
+  addCounter: (counter: Omit<CounterStatus, 'currentTicketId'>) => void;
+  removeCounter: (counterNumber: number) => void;
+  cancelTicket: (ticketId: string) => void;
   resetAll: () => void;
+
+  /**
+   * Guards / helpers.
+   * A doctor can only attend to ONE patient at a time. If a doctor is already
+   * assigned to a counter with a current ticket, they cannot be assigned to a
+   * second counter, and the UI should disable calling-next there.
+   */
+  isDoctorBusy: (doctorId: string) => boolean;
 };
 
 const initialCounters: CounterStatus[] = [
@@ -113,6 +137,20 @@ export const useTicketStore = create<State>()(
       counters: initialCounters,
       seqByDept: { G: 130, A: 125, B: 123, O: 105, C: 88, P: 74, D: 52, N: 33, E: 48 },
 
+      isDoctorBusy: (doctorId) => {
+        const state = get();
+        return state.counters.some(
+          (c) =>
+            c.doctorId === doctorId &&
+            c.currentTicketId != null &&
+            state.tickets.some(
+              (t) =>
+                t.id === c.currentTicketId &&
+                (t.status === 'called' || t.status === 'in_consultation')
+            )
+        );
+      },
+
       addTicket: ({ department, deptCode, patientName, priority, phone }) => {
         const nextSeq = (get().seqByDept[deptCode] ?? 0) + 1;
         const ticket: Ticket = {
@@ -127,7 +165,8 @@ export const useTicketStore = create<State>()(
           arrivedAt: Date.now(),
           estimatedWaitMin: Math.max(
             0,
-            get().tickets.filter((t) => t.status === 'waiting' && t.department === department).length * 8
+            get().tickets.filter((t) => t.status === 'waiting' && t.department === department)
+              .length * 8
           )
         };
         set((s) => ({
@@ -141,7 +180,13 @@ export const useTicketStore = create<State>()(
         const state = get();
         const c = state.counters.find((x) => x.counter === counter);
         if (!c || !c.available) return null;
-        // Pick highest priority, then earliest arrival, matching the counter's department.
+
+        // Invariant: one doctor can only attend one patient at a time.
+        if (c.doctorId && get().isDoctorBusy(c.doctorId)) return null;
+
+        // Also refuse if this counter already has a current ticket.
+        if (c.currentTicketId) return null;
+
         const candidates = state.tickets
           .filter((t) => t.status === 'waiting' && t.department === c.department)
           .sort((a, b) =>
@@ -171,7 +216,9 @@ export const useTicketStore = create<State>()(
       startConsultation: (ticketId) => {
         set((s) => ({
           tickets: s.tickets.map((t) =>
-            t.id === ticketId ? { ...t, status: 'in_consultation', consultStartAt: Date.now() } : t
+            t.id === ticketId
+              ? { ...t, status: 'in_consultation', consultStartAt: Date.now() }
+              : t
           )
         }));
       },
@@ -200,6 +247,19 @@ export const useTicketStore = create<State>()(
         }));
       },
 
+      updateConsultationNote: (ticketId, note) => {
+        set((s) => ({
+          tickets: s.tickets.map((t) =>
+            t.id === ticketId
+              ? {
+                  ...t,
+                  consultationNote: { ...t.consultationNote, ...note, savedAt: Date.now() }
+                }
+              : t
+          )
+        }));
+      },
+
       setCounterAvailability: (counter, available) =>
         set((s) => ({
           counters: s.counters.map((cc) =>
@@ -208,17 +268,45 @@ export const useTicketStore = create<State>()(
         })),
 
       assignDoctorToCounter: (counter, doctorId, doctorName, department) =>
-        set((s) => ({
-          counters: s.counters.map((cc) =>
-            cc.counter === counter
-              ? {
+        set((s) => {
+          // Enforce 1-doctor-1-counter: if this doctor already staffs another counter,
+          // remove them from it first.
+          return {
+            counters: s.counters.map((cc) => {
+              if (cc.counter === counter) {
+                return {
                   ...cc,
                   doctorId,
                   doctorName,
                   department: department ?? cc.department,
                   available: doctorId != null
-                }
-              : cc
+                };
+              }
+              if (doctorId && cc.doctorId === doctorId) {
+                return { ...cc, doctorId: null, doctorName: null, available: false };
+              }
+              return cc;
+            })
+          };
+        }),
+
+      addCounter: (counter) =>
+        set((s) => ({
+          counters: [...s.counters, { ...counter, currentTicketId: null }]
+        })),
+
+      removeCounter: (counterNumber) =>
+        set((s) => ({
+          counters: s.counters.filter((c) => c.counter !== counterNumber)
+        })),
+
+      cancelTicket: (ticketId) =>
+        set((s) => ({
+          tickets: s.tickets.map((t) =>
+            t.id === ticketId ? { ...t, status: 'cancelled' } : t
+          ),
+          counters: s.counters.map((cc) =>
+            cc.currentTicketId === ticketId ? { ...cc, currentTicketId: null } : cc
           )
         })),
 

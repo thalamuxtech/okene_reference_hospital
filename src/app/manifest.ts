@@ -11,7 +11,8 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#008B8B',
     orientation: 'portrait',
     icons: [
-      { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
+      { src: '/orh-logo.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/orh-logo.png', sizes: '512x512', type: 'image/png', purpose: 'any' }
     ]
   };
 }

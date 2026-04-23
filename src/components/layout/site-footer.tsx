@@ -81,15 +81,24 @@ export function SiteFooter() {
         <div className="mt-12 grid grid-cols-1 items-center gap-4 border-t border-slate-200/70 pt-8 text-xs text-slate-500 md:grid-cols-3">
           <p className="md:text-left">© {new Date().getFullYear()} Okene Reference Hospital. All rights reserved.</p>
 
-          <div className="flex justify-center">
+          <div className="flex items-center justify-center gap-2">
             <Link
-              href="/admin/login"
-              aria-label="Staff portal"
-              title="Staff portal"
+              href="/doctor/login"
+              aria-label="Doctor portal"
+              title="Doctor portal"
               className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition-all hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 hover:shadow-sm"
             >
               <ShieldCheck className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Staff portal</span>
+              <span className="hidden sm:inline">Doctor portal</span>
+            </Link>
+            <Link
+              href="/admin/login"
+              aria-label="Admin portal"
+              title="Admin portal"
+              className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition-all hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 hover:shadow-sm"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Admin portal</span>
             </Link>
           </div>
 

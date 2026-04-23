@@ -18,7 +18,7 @@ const NAV = [
 ];
 
 // Routes whose pages start with a dark hero — header should render light-on-dark at the top.
-const DARK_HERO_ROUTES = ['/', '/telehealth', '/emergency', '/admin/login'];
+const DARK_HERO_ROUTES = ['/', '/telehealth', '/emergency', '/admin/login', '/doctor/login', '/arrival'];
 
 export function SiteHeader() {
   const pathname = usePathname();

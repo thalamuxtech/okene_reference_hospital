@@ -13,10 +13,10 @@ import {
   Ticket as TicketIcon,
   AlertTriangle,
   PauseCircle,
-  Users,
   Video,
   RotateCcw,
-  Volume2
+  Volume2,
+  X
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,10 @@ export default function AdminTicketsPage() {
   const setCounterAvailability = useTicketStore((s) => s.setCounterAvailability);
   const assignDoctorToCounter = useTicketStore((s) => s.assignDoctorToCounter);
   const resetAll = useTicketStore((s) => s.resetAll);
+  const isDoctorBusy = useTicketStore((s) => s.isDoctorBusy);
+  const addCounter = useTicketStore((s) => s.addCounter);
+  const removeCounter = useTicketStore((s) => s.removeCounter);
+  const [showAddCounter, setShowAddCounter] = useState(false);
 
   const waiting = tickets.filter((t) => t.status === 'waiting');
   const completed = tickets.filter((t) => t.status === 'completed');
@@ -68,9 +72,40 @@ export default function AdminTicketsPage() {
       {/* Counters grid */}
       <div className="mt-6">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900">Counters</h2>
-          <p className="text-xs text-slate-500">Assigned doctors · real-time state</p>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Counters</h2>
+            <p className="text-xs text-slate-500">Assigned doctors · real-time state</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShowAddCounter((v) => !v)}>
+            <UserPlus className="h-3.5 w-3.5" />
+            Add counter
+          </Button>
         </div>
+        <AnimatePresence>
+          {showAddCounter && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-3 overflow-hidden"
+            >
+              <NewCounterForm
+                existing={counters.map((c) => c.counter)}
+                onAdd={(n) => {
+                  addCounter({
+                    counter: n.counter,
+                    department: n.department,
+                    doctorId: null,
+                    doctorName: null,
+                    available: false
+                  });
+                  setShowAddCounter(false);
+                }}
+                onCancel={() => setShowAddCounter(false)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {counters.map((c) => {
             const current = c.currentTicketId ? tickets.find((t) => t.id === c.currentTicketId) : null;
@@ -80,6 +115,9 @@ export default function AdminTicketsPage() {
                 counter={c}
                 current={current ?? null}
                 waiting={tickets.filter((t) => t.status === 'waiting' && t.department === c.department)}
+                doctorBusyElsewhere={
+                  c.doctorId != null && !c.currentTicketId && isDoctorBusy(c.doctorId)
+                }
                 onCallNext={() => {
                   const t = callNext(c.counter);
                   if (!t) return;
@@ -91,6 +129,7 @@ export default function AdminTicketsPage() {
                 onAssignDoctor={(doctorId, name, department) =>
                   assignDoctorToCounter(c.counter, doctorId, name, department)
                 }
+                onRemove={() => removeCounter(c.counter)}
               />
             );
           })}
@@ -132,22 +171,26 @@ function CounterCard({
   counter,
   current,
   waiting,
+  doctorBusyElsewhere,
   onCallNext,
   onStart,
   onComplete,
   onSkip,
   onToggleAvailable,
-  onAssignDoctor
+  onAssignDoctor,
+  onRemove
 }: {
   counter: CounterStatus;
   current: Ticket | null;
   waiting: Ticket[];
+  doctorBusyElsewhere: boolean;
   onCallNext: () => void;
   onStart: () => void;
   onComplete: () => void;
   onSkip: () => void;
   onToggleAvailable: () => void;
   onAssignDoctor: (doctorId: string | null, name: string | null, department?: string) => void;
+  onRemove: () => void;
 }) {
   const [assignOpen, setAssignOpen] = useState(false);
 
@@ -171,11 +214,23 @@ function CounterCard({
           <p className="text-[10px] font-semibold uppercase tracking-widest opacity-80">Counter</p>
           <p className="text-2xl font-black leading-none">#{counter.counter}</p>
         </div>
-        <div className="text-right">
-          <p className="text-[10px] font-semibold uppercase tracking-widest opacity-80">
-            {counter.department}
-          </p>
-          <p className="text-xs font-semibold">{counter.doctorName ?? 'Unassigned'}</p>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-widest opacity-80">
+              {counter.department}
+            </p>
+            <p className="text-xs font-semibold">{counter.doctorName ?? 'Unassigned'}</p>
+          </div>
+          <button
+            onClick={() => {
+              if (confirm(`Remove counter #${counter.counter}?`)) onRemove();
+            }}
+            className="rounded-lg bg-white/15 p-1.5 text-white transition-colors hover:bg-white/25"
+            aria-label="Remove counter"
+            title="Remove counter"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
 
@@ -208,10 +263,17 @@ function CounterCard({
           />
         ) : (
           <div className="flex flex-col items-start gap-3">
-            <Badge variant="success">
-              <CheckCircle2 className="h-3 w-3" />
-              Ready
-            </Badge>
+            {doctorBusyElsewhere ? (
+              <Badge variant="warning">
+                <AlertTriangle className="h-3 w-3" />
+                Doctor busy elsewhere
+              </Badge>
+            ) : (
+              <Badge variant="success">
+                <CheckCircle2 className="h-3 w-3" />
+                Ready
+              </Badge>
+            )}
             <p className="text-xs text-slate-600">
               <b>{waiting.length}</b> patient{waiting.length === 1 ? '' : 's'} waiting in {counter.department}.
             </p>
@@ -223,13 +285,21 @@ function CounterCard({
               </p>
             )}
             <div className="flex gap-2">
-              <Button size="sm" onClick={onCallNext} disabled={waiting.length === 0}>
+              <Button
+                size="sm"
+                onClick={onCallNext}
+                disabled={waiting.length === 0 || doctorBusyElsewhere}
+              >
                 <SkipForward className="h-3.5 w-3.5" />
                 Call next
               </Button>
               <Button size="sm" variant="ghost" onClick={onToggleAvailable}>
                 <PauseCircle className="h-3.5 w-3.5" />
                 Pause
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setAssignOpen((v) => !v)}>
+                <UserPlus className="h-3.5 w-3.5" />
+                {counter.doctorName ? 'Reassign' : 'Assign doctor'}
               </Button>
             </div>
           </div>
@@ -471,6 +541,74 @@ function WaitingQueue({ tickets }: { tickets: Ticket[] }) {
             </AnimatePresence>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+
+import { Input, Label } from "@/components/ui/input";
+import { DEPARTMENTS_META } from "@/lib/ticket-store";
+
+function NewCounterForm({
+  existing,
+  onAdd,
+  onCancel
+}: {
+  existing: number[];
+  onAdd: (data: { counter: number; department: string }) => void;
+  onCancel: () => void;
+}) {
+  const nextCounter = Math.max(0, ...existing) + 1;
+  const [counter, setCounter] = useState(String(nextCounter));
+  const [department, setDepartment] = useState(DEPARTMENTS_META[0].name);
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
+      <p className="mb-3 text-sm font-bold text-slate-900">Add a new counter</p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div>
+          <Label>Counter number</Label>
+          <Input
+            type="number"
+            min={1}
+            value={counter}
+            onChange={(e) => setCounter(e.target.value)}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <Label>Department</Label>
+          <select
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            className="h-11 w-full rounded-lg border-2 border-slate-200 bg-white px-4 text-sm focus:border-primary-500 focus:outline-none"
+          >
+            {DEPARTMENTS_META.map((d) => (
+              <option key={d.code} value={d.name}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="mt-3 flex justify-end gap-2">
+        <Button size="sm" variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => {
+            const n = Number(counter);
+            if (!n || existing.includes(n)) {
+              alert("Counter number must be unique and positive.");
+              return;
+            }
+            onAdd({ counter: n, department });
+          }}
+        >
+          <UserPlus className="h-3.5 w-3.5" />
+          Add counter
+        </Button>
       </div>
     </div>
   );

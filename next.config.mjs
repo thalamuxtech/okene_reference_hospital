@@ -7,6 +7,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'randomuser.me' },
+      { protocol: 'https', hostname: 'ui-avatars.com' },
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' }
     ]
   },

@@ -9,7 +9,7 @@ const testimonials = [
   {
     name: 'Ohunene Oseni',
     role: 'Trader, Okene main market',
-    photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&auto=format',
+    photo: 'https://ui-avatars.com/api/?name=Ohunene+Oseni&size=200&background=F59E0B&color=ffffff&bold=true&format=png',
     rating: 5,
     quote:
       'I booked an appointment from my shop in two minutes. Dr. Omeiza Nuhu treated me like family, and the SMS reminders meant I never missed a single visit.'
@@ -17,7 +17,7 @@ const testimonials = [
   {
     name: 'Alhaji Yakubu Ozigi',
     role: 'Retired civil servant, Adavi',
-    photo: 'https://images.unsplash.com/photo-1521799022345-481a897e45ca?w=200&h=200&fit=crop&auto=format',
+    photo: 'https://ui-avatars.com/api/?name=Yakubu+Ozigi&size=200&background=1E3A8A&color=ffffff&bold=true&format=png',
     rating: 5,
     quote:
       'I live in Adavi and cannot travel easily. Telehealth with Prof. Avidime has been a lifeline — my blood pressure has never been better controlled.'
@@ -25,7 +25,7 @@ const testimonials = [
   {
     name: 'Hadiza Inuwa',
     role: 'Student, Kogi State University',
-    photo: 'https://images.unsplash.com/photo-1541823709867-1b206113eafd?w=200&h=200&fit=crop&auto=format',
+    photo: 'https://ui-avatars.com/api/?name=Hadiza+Inuwa&size=200&background=BE185D&color=ffffff&bold=true&format=png',
     rating: 5,
     quote:
       'The AI triage quickly flagged my symptoms as urgent and booked me the same day. My mother in Eika now uses the USSD code — it works on her old phone.'
