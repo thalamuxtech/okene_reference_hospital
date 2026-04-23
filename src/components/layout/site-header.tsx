@@ -24,7 +24,8 @@ const DARK_HERO_ROUTES = [
   '/emergency',
   '/admin/login',
   '/doctor/login',
-  '/arrival'
+  '/arrival',
+  '/triage'
 ];
 
 export function SiteHeader() {
@@ -56,7 +57,7 @@ export function SiteHeader() {
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, []);
-  const logoSize = scrolled ? (isDesktop ? 56 : 44) : isDesktop ? 108 : 76;
+  const logoSize = scrolled ? (isDesktop ? 64 : 48) : isDesktop ? 124 : 84;
 
   return (
     <header
@@ -64,13 +65,15 @@ export function SiteHeader() {
         'sticky top-0 z-50 transition-all duration-500',
         scrolled
           ? 'border-b border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-sm'
-          : 'bg-transparent'
+          : light
+          ? 'bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-transparent backdrop-blur-[2px]'
+          : 'border-b border-slate-200/60 bg-white/70 backdrop-blur-md'
       )}
     >
       <div
         className={cn(
           'container relative flex items-center justify-between transition-all duration-500',
-          scrolled ? 'h-20' : 'h-24 lg:h-28'
+          scrolled ? 'h-[88px]' : 'h-28 lg:h-32'
         )}
       >
         {/* Logo slot — oversized logo hangs ~60% below the bar when at rest. */}

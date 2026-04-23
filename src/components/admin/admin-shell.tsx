@@ -19,10 +19,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  ChevronLeft,
   Ticket,
-  PanelLeftClose,
-  PanelLeftOpen
+  ChevronDown
 } from 'lucide-react';
 import { HospitalShield } from '@/components/layout/logo';
 import { isAdminSignedIn, signOutAdmin, ADMIN_EMAIL } from '@/lib/admin-auth';
@@ -40,39 +38,25 @@ const NAV = [
   { href: '/admin/settings', icon: Settings, label: 'Settings' }
 ];
 
-const COLLAPSED_KEY = 'orh-admin-sidebar-collapsed';
-
 export function AdminShell({ children, title }: { children: ReactNode; title: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const [ready, setReady] = useState(false);
-  const [mobile, setMobile] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
   useEffect(() => {
     if (!isAdminSignedIn()) {
       router.replace('/admin/login');
       return;
     }
-    try {
-      setCollapsed(localStorage.getItem(COLLAPSED_KEY) === '1');
-    } catch {}
     setReady(true);
   }, [router]);
 
   useEffect(() => {
-    setMobile(false);
+    setMobileOpen(false);
+    setAccountOpen(false);
   }, [pathname]);
-
-  function toggleCollapsed() {
-    setCollapsed((v) => {
-      const next = !v;
-      try {
-        localStorage.setItem(COLLAPSED_KEY, next ? '1' : '0');
-      } catch {}
-      return next;
-    });
-  }
 
   function logout() {
     signOutAdmin();
@@ -87,155 +71,168 @@ export function AdminShell({ children, title }: { children: ReactNode; title: st
     );
   }
 
-  const sidebarWidth = collapsed ? 'w-[72px]' : 'w-64';
-  const mainPadding = collapsed ? 'lg:pl-[72px]' : 'lg:pl-64';
-
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Sidebar — desktop */}
-      <motion.aside
-        initial={false}
-        animate={{ width: collapsed ? 72 : 256 }}
-        transition={{ type: 'spring', stiffness: 280, damping: 30 }}
-        className={cn(
-          'fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-slate-200 bg-white lg:flex'
-        )}
-      >
-        <div className={cn('flex h-16 items-center border-b border-slate-200', collapsed ? 'justify-center px-3' : 'px-5')}>
-          <Link href="/admin" className="flex items-center gap-3 group">
-            <span className="block transition-transform group-hover:scale-105">
-              <HospitalShield size={44} className="h-11 w-11" />
-            </span>
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex flex-col overflow-hidden leading-none"
-                >
-                  <span className="text-[13px] font-bold tracking-tight text-slate-900">
-                    Okene Reference
-                  </span>
-                  <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-primary-600">
-                    Admin Portal
-                  </span>
-                </motion.span>
-              )}
-            </AnimatePresence>
+      {/* Top menu bar */}
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-4 lg:px-8">
+          {/* Brand */}
+          <Link href="/admin" className="flex flex-shrink-0 items-center gap-3 py-3">
+            <HospitalShield size={52} className="h-13 w-13" />
+            <div className="hidden leading-none lg:block">
+              <p className="text-sm font-bold tracking-tight text-slate-900">
+                Okene Reference
+              </p>
+              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary-600">
+                Admin Portal
+              </p>
+            </div>
           </Link>
-        </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {NAV.map((n) => (
-            <NavLink
-              key={n.href}
-              {...n}
-              active={pathname === n.href}
-              collapsed={collapsed}
-            />
-          ))}
-        </nav>
+          {/* Desktop nav */}
+          <nav className="hidden flex-1 items-center gap-1 overflow-x-auto scrollbar-hide lg:flex">
+            {NAV.map((n) => (
+              <TopNavLink key={n.href} {...n} active={pathname === n.href} />
+            ))}
+          </nav>
 
-        <div className="border-t border-slate-200 p-3 space-y-2">
-          <button
-            onClick={toggleCollapsed}
-            className={cn(
-              'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100',
-              collapsed && 'justify-center'
-            )}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  Collapse
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
+          {/* Right-side actions */}
+          <div className="ml-auto flex items-center gap-2">
+            <div className="relative hidden md:block">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                placeholder="Search…"
+                className="h-10 w-48 rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm placeholder:text-slate-400 focus:border-primary-500 focus:bg-white focus:outline-none xl:w-64"
+              />
+            </div>
 
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-3 rounded-lg bg-slate-50 p-3"
+            <button
+              aria-label="Notifications"
+              className="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-navy-500 text-xs font-bold text-white">
-                OA
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-slate-900">Okene Admin</p>
-                <p className="truncate text-[11px] text-slate-500">{ADMIN_EMAIL}</p>
-              </div>
-            </motion.div>
-          )}
+              <Bell className="h-5 w-5" />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
+            </button>
 
-          <button
-            onClick={logout}
-            className={cn(
-              'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700',
-              collapsed && 'justify-center'
-            )}
-            aria-label="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  Sign out
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
+            {/* Account menu */}
+            <div className="relative">
+              <button
+                onClick={() => setAccountOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-full border border-slate-200 py-1 pl-1 pr-2 transition-colors hover:border-primary-300 hover:bg-slate-50"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-navy-500 text-[11px] font-bold text-white">
+                  OA
+                </span>
+                <ChevronDown className="h-4 w-4 text-slate-500" />
+              </button>
+              <AnimatePresence>
+                {accountOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                  >
+                    <div className="border-b border-slate-100 bg-slate-50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        Signed in as
+                      </p>
+                      <p className="mt-1 truncate text-sm font-bold text-slate-900">
+                        {ADMIN_EMAIL}
+                      </p>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        href="/admin/settings"
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                      >
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </Link>
+                      <button
+                        onClick={logout}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+              className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-      </motion.aside>
 
-      {/* Mobile drawer */}
+        {/* Breadcrumb strip */}
+        <div className="border-t border-slate-100 bg-slate-50/60">
+          <div className="mx-auto flex max-w-[1600px] items-center gap-2 px-4 py-2 text-xs text-slate-500 lg:px-8">
+            <span>Admin</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="font-semibold text-slate-900">{title}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile sheet */}
       <AnimatePresence>
-        {mobile && (
+        {mobileOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setMobile(false)}
+              onClick={() => setMobileOpen(false)}
               className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm lg:hidden"
             />
-            <motion.aside
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
+            <motion.div
+              initial={{ y: '-100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '-100%' }}
               transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white lg:hidden"
+              className="fixed inset-x-0 top-0 z-50 max-h-[90vh] overflow-y-auto rounded-b-3xl bg-white shadow-2xl lg:hidden"
             >
-              <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+              <div className="flex items-center justify-between border-b border-slate-200 p-4">
                 <Link href="/admin" className="flex items-center gap-2">
                   <HospitalShield size={36} className="h-9 w-9" />
                   <span className="text-sm font-bold text-slate-900">Admin</span>
                 </Link>
                 <button
-                  onClick={() => setMobile(false)}
+                  onClick={() => setMobileOpen(false)}
                   className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-                {NAV.map((n) => (
-                  <NavLink key={n.href} {...n} active={pathname === n.href} collapsed={false} />
-                ))}
+              <nav className="grid grid-cols-2 gap-2 p-3">
+                {NAV.map((n) => {
+                  const active = pathname === n.href;
+                  return (
+                    <Link
+                      key={n.href}
+                      href={n.href}
+                      className={cn(
+                        'flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium',
+                        active
+                          ? 'bg-primary-50 text-primary-700'
+                          : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
+                      )}
+                    >
+                      <n.icon className="h-4 w-4 flex-shrink-0" />
+                      {n.label}
+                    </Link>
+                  );
+                })}
               </nav>
               <div className="border-t border-slate-200 p-3">
                 <button
@@ -246,119 +243,53 @@ export function AdminShell({ children, title }: { children: ReactNode; title: st
                   Sign out
                 </button>
               </div>
-            </motion.aside>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Main */}
-      <div className={cn('transition-[padding] duration-300', mainPadding)}>
-        {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200 bg-white/90 px-4 backdrop-blur-md sm:px-6">
-          <button
-            onClick={() => setMobile(true)}
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <button
-            onClick={toggleCollapsed}
-            className="hidden rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:inline-flex"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {collapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
-          </button>
-
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <span>Admin</span>
-            <ChevronRight className="h-4 w-4" />
-            <span className="font-semibold text-slate-900">{title}</span>
-          </div>
-
-          <div className="ml-auto flex items-center gap-2">
-            <div className="relative hidden md:block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                placeholder="Search patients, doctors, appointments…"
-                className="h-10 w-72 rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm placeholder:text-slate-400 focus:border-primary-500 focus:bg-white focus:outline-none"
-              />
-            </div>
-            <button
-              aria-label="Notifications"
-              className="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
-          </div>
-        </header>
-
-        <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.28 }}
-          >
-            {children}
-          </motion.div>
-        </main>
-      </div>
+      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+        >
+          {children}
+        </motion.div>
+      </main>
     </div>
   );
 }
 
-function NavLink({
+function TopNavLink({
   href,
   icon: Icon,
   label,
-  active,
-  collapsed
+  active
 }: {
   href: string;
   icon: any;
   label: string;
   active: boolean;
-  collapsed: boolean;
 }) {
   return (
     <Link
       href={href}
-      title={collapsed ? label : undefined}
       className={cn(
-        'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
-        collapsed && 'justify-center px-2',
-        active
-          ? 'bg-gradient-to-r from-primary-50 to-transparent text-primary-700'
-          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+        'relative flex flex-shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        active ? 'text-primary-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
       )}
     >
       {active && (
         <motion.span
-          layoutId="admin-nav"
-          className="absolute inset-y-1 left-0 w-1 rounded-full bg-primary-500"
+          layoutId="admin-top-nav"
+          className="absolute inset-0 rounded-lg bg-primary-50"
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
         />
       )}
-      <Icon
-        className={cn(
-          'h-4 w-4 flex-shrink-0',
-          active ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'
-        )}
-      />
-      <AnimatePresence initial={false}>
-        {!collapsed && (
-          <motion.span
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: 'auto' }}
-            exit={{ opacity: 0, width: 0 }}
-            className="overflow-hidden whitespace-nowrap"
-          >
-            {label}
-          </motion.span>
-        )}
-      </AnimatePresence>
+      <Icon className={cn('relative h-4 w-4', active ? 'text-primary-600' : 'text-slate-400')} />
+      <span className="relative">{label}</span>
     </Link>
   );
 }

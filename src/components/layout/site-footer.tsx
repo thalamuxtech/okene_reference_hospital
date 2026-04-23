@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Logo } from './logo';
-import { Phone, Mail, MapPin, Github, ShieldCheck } from 'lucide-react';
+import { Phone, Mail, MapPin, ShieldCheck } from 'lucide-react';
 
 export function SiteFooter() {
   return (
@@ -8,21 +8,11 @@ export function SiteFooter() {
       <div className="container py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Logo size={64} wordmarkSize="lg" />
+            <Logo size={88} wordmarkSize="lg" />
             <p className="mt-5 max-w-xs text-sm text-slate-600">
               A modern medical platform built for the Kogi Central community. Online, offline, and
               accessible to all.
             </p>
-            <div className="mt-4 flex gap-3">
-              <a
-                href="https://github.com/thalamuxtech/okene_reference_hospital"
-                target="_blank"
-                rel="noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:border-primary-500 hover:text-primary-600"
-              >
-                <Github className="h-4 w-4" />
-              </a>
-            </div>
           </div>
 
           <div>
