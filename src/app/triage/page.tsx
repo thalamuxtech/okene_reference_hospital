@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   Stethoscope,
   ShieldCheck,
-  Mic,
   RotateCcw,
   Clock,
   HeartPulse,
@@ -22,27 +21,29 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  answerQuestion,
+  startSession,
+  type Assessment,
+  type Session
+} from '@/lib/triage-engine';
 
 type Msg =
   | { role: 'user'; text: string }
   | {
       role: 'assistant';
       text: string;
-      assessment?: {
-        urgency: 'EMERGENCY' | 'URGENT' | 'ROUTINE';
-        action: string;
-        specialty?: string;
-        redFlags?: string[];
-      };
+      options?: Array<{ label: string; value: string }>;
+      assessment?: Assessment;
     };
 
 const STARTERS = [
-  'Persistent cough and fever for 3 days',
-  'Severe headache with sensitivity to light',
-  'My child has a rash and is tired',
-  'Chest discomfort that radiates to my left arm',
-  'Vomiting with sharp abdominal pain',
-  'Painful urination for 2 days'
+  'Chest pain that spreads to my left arm',
+  'Fever and body aches for 2 days',
+  'My child has a fever and a rash',
+  'Persistent cough for 3 weeks',
+  'Sharp pain in my lower abdomen',
+  'Burning when I urinate'
 ];
 
 const LANGUAGES = [
@@ -59,11 +60,12 @@ export default function TriagePage() {
     {
       role: 'assistant',
       text:
-        "Hello, I'm Omeiza — your Okene Reference Hospital AI triage assistant. Tell me what you're feeling and I'll guide you to the right next step. I will never diagnose or prescribe."
+        "Sannu! I'm Omeiza, your Okene Reference Hospital AI triage assistant. In a few sentences, tell me what brings you here today. I'll ask clinical follow-up questions and guide you to the right next step. I will never diagnose or prescribe."
     }
   ]);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
   const [language, setLanguage] = useState('en');
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -71,71 +73,74 @@ export default function TriagePage() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, thinking]);
 
-  function classify(text: string) {
-    const t = text.toLowerCase();
-    const redFlags: string[] = [];
-    if (/chest pain|cannot breathe|severe bleeding|stroke|unconscious|suicid|heart attack|radiating to left arm/.test(t)) {
-      if (/chest|heart|arm/.test(t)) redFlags.push('Cardiac red flag');
-      if (/breathe|breath/.test(t)) redFlags.push('Respiratory distress');
-      if (/bleeding/.test(t)) redFlags.push('Uncontrolled bleeding');
-      return {
-        urgency: 'EMERGENCY' as const,
-        action:
-          'Please go to the nearest emergency room immediately or call 112. I have logged this as a red-flag symptom. While you go, stay calm, avoid exertion, and keep a family member with you.',
-        specialty: 'Emergency Medicine',
-        redFlags
-      };
-    }
-    if (/fever|vomit|persistent|severe|blood|cannot|painful|rash/.test(t)) {
-      return {
-        urgency: 'URGENT' as const,
-        action:
-          'Book an appointment today or tomorrow. In the meantime: rest, drink plenty of fluids, and track your temperature every 4 hours.',
-        specialty: /child|baby|paediat/.test(t)
-          ? 'Pediatrics'
-          : /urin|painful urination/.test(t)
-          ? 'General Medicine'
-          : 'General Medicine',
-        redFlags: []
-      };
-    }
-    return {
-      urgency: 'ROUTINE' as const,
-      action:
-        "This looks routine. A consultation within the next week should be fine. If anything worsens, book sooner or come to the hospital.",
-      specialty: 'General Medicine',
-      redFlags: []
-    };
-  }
-
-  async function send(text?: string) {
+  async function begin(text?: string) {
     const q = (text ?? input).trim();
     if (!q) return;
     setInput('');
     setMessages((m) => [...m, { role: 'user', text: q }]);
     setThinking(true);
-    await new Promise((r) => setTimeout(r, 1100));
-    const a = classify(q);
+    await new Promise((r) => setTimeout(r, 800));
+
+    const { session: s, firstMessage, firstQuestion } = startSession(q);
+    setSession(s);
     setMessages((m) => [
       ...m,
+      { role: 'assistant', text: firstMessage },
       {
         role: 'assistant',
-        text: `Based on what you described, here's my assessment:`,
-        assessment: a
+        text: firstQuestion.prompt,
+        options: firstQuestion.options.map((o) => ({ label: o.label, value: o.value }))
       }
     ]);
     setThinking(false);
   }
 
+  async function choose(value: string, label: string) {
+    if (!session || session.done) return;
+    setMessages((m) => [...m, { role: 'user', text: label }]);
+    setThinking(true);
+    await new Promise((r) => setTimeout(r, 700));
+    const out = answerQuestion(session, value);
+    setSession(out.session);
+
+    if (out.assessment) {
+      setMessages((m) => [
+        ...m,
+        {
+          role: 'assistant',
+          text:
+            out.assessment!.urgency === 'EMERGENCY'
+              ? "Thank you. Based on what you've told me I'm escalating this now."
+              : 'Thank you. Based on our conversation, here is my assessment.',
+          assessment: out.assessment!
+        }
+      ]);
+    } else if (out.nextQuestion) {
+      setMessages((m) => [
+        ...m,
+        {
+          role: 'assistant',
+          text: out.nextQuestion!.prompt,
+          options: out.nextQuestion!.options.map((o) => ({ label: o.label, value: o.value }))
+        }
+      ]);
+    }
+    setThinking(false);
+  }
+
   function reset() {
+    setSession(null);
     setMessages([
       {
         role: 'assistant',
         text:
-          "Hi again! Describe a new concern whenever you're ready. I'll guide you to the right care."
+          "Ready for a new consultation. What's troubling you now? Describe your main concern in your own words."
       }
     ]);
   }
+
+  const lastOptions = [...messages].reverse().find((m) => m.role === 'assistant' && (m as any).options);
+  const activeOptions = (lastOptions as any)?.options as { label: string; value: string }[] | undefined;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -172,18 +177,18 @@ export default function TriagePage() {
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-200 backdrop-blur"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              AI-powered symptom triage
+              Clinical AI triage
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 }}
-              className="mt-6 text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[60px]"
+              className="mt-6 text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[58px]"
             >
-              Describe how you feel.{' '}
+              A real conversation.{' '}
               <span className="bg-gradient-to-r from-primary-300 via-white to-amber-200 bg-clip-text text-transparent">
-                We&apos;ll guide you.
+                Clinician-style.
               </span>
             </motion.h1>
 
@@ -193,15 +198,16 @@ export default function TriagePage() {
               transition={{ delay: 0.15 }}
               className="mt-5 max-w-md text-base text-white/70"
             >
-              Private, multilingual, available 24/7. Trained on Nigerian clinical context and
-              backed by red-flag safety rules — escalates life-threatening symptoms straight to 112.
+              Omeiza walks you through SOCRATES-style follow-up questions the way a Nigerian GP
+              would — one step at a time — then produces an urgency level, recommended specialty
+              and self-care advice.
             </motion.p>
 
             {/* Stat chips */}
             <div className="mt-10 grid grid-cols-3 gap-3">
               {[
-                { n: '< 30s', l: 'Response time' },
-                { n: '5 langs', l: 'Supported' },
+                { n: '8', l: 'Clinical pathways' },
+                { n: '< 30s', l: 'Typical response' },
                 { n: '24/7', l: 'Availability' }
               ].map((s) => (
                 <div
@@ -214,6 +220,32 @@ export default function TriagePage() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            {/* Clinical pathways summary */}
+            <div className="mt-6 space-y-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-200">
+                Coverage
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  'Chest pain',
+                  'Fever / malaria',
+                  'Headache',
+                  'Child illness',
+                  'Abdominal pain',
+                  'Cough / breathing',
+                  'Urinary',
+                  'General'
+                ].map((c) => (
+                  <span
+                    key={c}
+                    className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-white/70"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Language selector */}
@@ -239,7 +271,7 @@ export default function TriagePage() {
             </div>
 
             {/* Trust row */}
-            <div className="mt-10 space-y-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur">
+            <div className="mt-8 space-y-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-300">
                   <ShieldCheck className="h-5 w-5" />
@@ -258,8 +290,8 @@ export default function TriagePage() {
                 <div>
                   <p className="text-sm font-bold text-white">Red-flag safety net</p>
                   <p className="mt-0.5 text-xs text-white/60">
-                    Chest pain, stroke, heavy bleeding and other critical symptoms escalate to
-                    112 immediately.
+                    Crushing chest pain, stroke symptoms, heavy bleeding and other critical signs
+                    escalate to 112 immediately.
                   </p>
                 </div>
               </div>
@@ -295,14 +327,17 @@ export default function TriagePage() {
                   <div>
                     <p className="text-sm font-bold">Omeiza · AI Triage</p>
                     <p className="text-[11px] text-emerald-300">
-                      ● Online · responses in seconds
+                      ● {session ? session.category.name : 'Ready to listen'}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="teal" className="bg-white/10 text-primary-200">
-                    GPT-4o
-                  </Badge>
+                  {session && (
+                    <Badge variant="teal" className="bg-white/10 text-primary-200">
+                      Step {Math.min(session.step + 1, session.category.questions.length)} of{' '}
+                      {session.category.questions.length}
+                    </Badge>
+                  )}
                   <button
                     onClick={reset}
                     aria-label="Start new conversation"
@@ -315,7 +350,7 @@ export default function TriagePage() {
               </div>
 
               {/* Messages */}
-              <div className="min-h-[460px] max-h-[600px] overflow-y-auto bg-gradient-to-b from-transparent to-white/[0.02] px-5 py-6">
+              <div className="min-h-[460px] max-h-[560px] overflow-y-auto bg-gradient-to-b from-transparent to-white/[0.02] px-5 py-6">
                 <div className="space-y-5">
                   <AnimatePresence initial={false}>
                     {messages.map((m, i) => (
@@ -379,11 +414,34 @@ export default function TriagePage() {
                 </div>
               </div>
 
+              {/* Option chips for the latest question (clinical multiple choice) */}
+              {session && !session.done && activeOptions && activeOptions.length > 0 && (
+                <div className="border-t border-white/5 bg-white/[0.02] px-5 py-4">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/50">
+                    Your answer
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {activeOptions.map((o) => (
+                      <motion.button
+                        key={o.value}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => choose(o.value, o.label)}
+                        disabled={thinking}
+                        className="rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2 text-sm font-medium text-white/90 transition-colors hover:border-primary-400/50 hover:bg-primary-500/15 hover:text-white disabled:opacity-50"
+                      >
+                        {o.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Starter suggestions (only at start) */}
-              {messages.length <= 1 && (
+              {!session && (
                 <div className="border-t border-white/5 px-5 py-4">
                   <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-white/50">
-                    <Clock className="h-3.5 w-3.5" /> Quick prompts
+                    <Clock className="h-3.5 w-3.5" /> Quick start
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {STARTERS.map((s) => (
@@ -391,7 +449,7 @@ export default function TriagePage() {
                         key={s}
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => send(s)}
+                        onClick={() => begin(s)}
                         className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:border-primary-400/50 hover:bg-primary-500/10 hover:text-white"
                       >
                         {s}
@@ -405,7 +463,11 @@ export default function TriagePage() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  send();
+                  if (session) {
+                    // During Q&A the composer is read-only — nudge to use option chips.
+                    return;
+                  }
+                  begin();
                 }}
                 className="border-t border-white/5 bg-white/[0.02] p-4"
               >
@@ -413,18 +475,17 @@ export default function TriagePage() {
                   <Input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Describe your symptoms…"
-                    className="border-transparent bg-transparent text-white placeholder:text-white/40 focus:ring-0"
+                    placeholder={
+                      session && !session.done
+                        ? 'Please use the answer chips above'
+                        : session?.done
+                        ? 'Start a new conversation with the reset icon above'
+                        : 'Describe your main concern…'
+                    }
+                    disabled={!!session}
+                    className="border-transparent bg-transparent text-white placeholder:text-white/40 focus:ring-0 disabled:opacity-60"
                   />
-                  <button
-                    type="button"
-                    aria-label="Voice input (coming soon)"
-                    className="rounded-lg p-2 text-white/40 hover:text-white/60"
-                    title="Voice input — coming soon"
-                  >
-                    <Mic className="h-4 w-4" />
-                  </button>
-                  <Button type="submit" disabled={!input.trim() || thinking}>
+                  <Button type="submit" disabled={!!session || !input.trim() || thinking}>
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -444,16 +505,7 @@ export default function TriagePage() {
   );
 }
 
-function AssessmentCard({
-  a
-}: {
-  a: {
-    urgency: 'EMERGENCY' | 'URGENT' | 'ROUTINE';
-    action: string;
-    specialty?: string;
-    redFlags?: string[];
-  };
-}) {
+function AssessmentCard({ a }: { a: Assessment }) {
   const config = {
     EMERGENCY: {
       bg: 'from-red-500 to-red-700',
@@ -496,7 +548,7 @@ function AssessmentCard({
 
       <p className="mt-4 text-sm leading-relaxed">{a.action}</p>
 
-      {a.redFlags && a.redFlags.length > 0 && (
+      {a.redFlags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {a.redFlags.map((rf) => (
             <span
@@ -506,6 +558,22 @@ function AssessmentCard({
               {rf}
             </span>
           ))}
+        </div>
+      )}
+
+      {a.selfCare.length > 0 && (
+        <div className="mt-4 rounded-xl bg-white/10 p-3 backdrop-blur">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/80">
+            In the meantime
+          </p>
+          <ul className="mt-2 space-y-1 text-xs">
+            {a.selfCare.map((s) => (
+              <li key={s} className="flex gap-1.5">
+                <span className="opacity-70">·</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
