@@ -2,11 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
-import { SiteHeader } from '@/components/layout/site-header';
-import { SiteFooter } from '@/components/layout/site-footer';
-import { EmergencyDock } from '@/components/layout/emergency-dock';
 import { ScrollProgress } from '@/components/motion/scroll-progress';
 import { Splash } from '@/components/layout/splash';
+import { PublicChrome } from '@/components/layout/public-chrome';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -65,10 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-background font-sans text-foreground">
         <Splash />
         <ScrollProgress />
-        <SiteHeader />
-        <main className="relative min-h-[60vh]">{children}</main>
-        <SiteFooter />
-        <EmergencyDock />
+        <PublicChrome>{children}</PublicChrome>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
