@@ -51,6 +51,10 @@ export const useDoctorsStore = create<State>()(
     }),
     {
       name: 'orh-doctors',
+      // Bump when the seed data changes in a way existing cached copies
+      // must be replaced (e.g. 2026-04-24: Salihu -> Solomon rename).
+      version: 2,
+      migrate: () => ({ doctors: SEED_DOCTORS }) as any,
       storage: createJSONStorage(() =>
         typeof window === 'undefined' ? ({} as Storage) : window.localStorage
       )

@@ -347,6 +347,14 @@ export const useTicketStore = create<State>()(
     }),
     {
       name: TICKETS_CHANNEL,
+      // Bump when counter/seed data changes so cached browser state is
+      // replaced on next load (e.g. 2026-04-24: Salihu -> Solomon rename).
+      version: 2,
+      migrate: () => ({
+        tickets: seedTickets(),
+        counters: initialCounters,
+        seqByDept: { G: 130, A: 125, B: 123, O: 105, C: 88, P: 74, D: 52, N: 33, E: 48 }
+      }) as any,
       storage: createJSONStorage(() =>
         typeof window === 'undefined' ? ({} as Storage) : window.localStorage
       )
