@@ -76,7 +76,7 @@ function GeneralSettings() {
       <Card title="Hospital identity">
         <div>
           <Label>Hospital name</Label>
-          <Input defaultValue="Okene Reference Hospital" />
+          <Input defaultValue="Confluence University of Science and Technology Teaching Hospital, Okene (CUSTECH-TH)" />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
@@ -97,7 +97,7 @@ function GeneralSettings() {
       <Card title="Contact">
         <div>
           <Label>Main phone</Label>
-          <Input defaultValue="+234 800 000 0000" />
+          <Input defaultValue="+234-7069507035" />
         </div>
         <div>
           <Label>Emergency hotline</Label>

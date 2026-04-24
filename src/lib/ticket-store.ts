@@ -2,6 +2,9 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { publish } from './broadcast';
+
+export const TICKETS_CHANNEL = 'orh-tickets';
 
 export type TicketStatus =
   | 'waiting'
@@ -92,7 +95,7 @@ const initialCounters: CounterStatus[] = [
   { counter: 1, department: 'General Medicine', doctorId: 'dr-zainab-ozigi', doctorName: 'Dr. Zainab Ozigi', available: true, currentTicketId: null },
   { counter: 2, department: 'Cardiology', doctorId: 'dr-omeiza-nuhu', doctorName: 'Dr. Omeiza Nuhu', available: true, currentTicketId: null },
   { counter: 3, department: 'Pediatrics', doctorId: 'dr-ohiare-ozavize', doctorName: 'Dr. Ozavize Ohiare', available: true, currentTicketId: null },
-  { counter: 4, department: 'Obstetrics & Gynaecology', doctorId: 'prof-avidime-salihu', doctorName: 'Prof. Salihu Avidime', available: true, currentTicketId: null },
+  { counter: 4, department: 'Obstetrics & Gynaecology', doctorId: 'prof-avidime-solomon', doctorName: 'Prof. Solomon Avidime', available: true, currentTicketId: null },
   { counter: 5, department: 'Orthopedics', doctorId: 'dr-abdulrahman-attah', doctorName: 'Dr. Abdulrahman Attah', available: false, currentTicketId: null },
   { counter: 6, department: 'Ophthalmology', doctorId: 'dr-ibrahim-onimisi', doctorName: 'Dr. Ibrahim Onimisi', available: true, currentTicketId: null }
 ];
@@ -173,6 +176,7 @@ export const useTicketStore = create<State>()(
           tickets: [...s.tickets, ticket],
           seqByDept: { ...s.seqByDept, [deptCode]: nextSeq }
         }));
+        publish(TICKETS_CHANNEL, 'ticket-added', { id: ticket.id });
         return ticket;
       },
 
@@ -210,6 +214,14 @@ export const useTicketStore = create<State>()(
             cc.counter === counter ? { ...cc, currentTicketId: next.id } : cc
           )
         }));
+        publish(TICKETS_CHANNEL, 'ticket-called', {
+          id: updatedTicket.id,
+          number: updatedTicket.number,
+          counter: updatedTicket.counter,
+          department: updatedTicket.department,
+          doctorName: updatedTicket.doctorName,
+          patientName: updatedTicket.patientName
+        });
         return updatedTicket;
       },
 
@@ -221,6 +233,7 @@ export const useTicketStore = create<State>()(
               : t
           )
         }));
+        publish(TICKETS_CHANNEL, 'consultation-started', { id: ticketId });
       },
 
       completeConsultation: (counter) => {
@@ -236,6 +249,7 @@ export const useTicketStore = create<State>()(
             cc.counter === counter ? { ...cc, currentTicketId: null } : cc
           )
         }));
+        publish(TICKETS_CHANNEL, 'consultation-completed', { id: tid, counter });
       },
 
       skipTicket: (ticketId) => {
@@ -245,6 +259,7 @@ export const useTicketStore = create<State>()(
             cc.currentTicketId === ticketId ? { ...cc, currentTicketId: null } : cc
           )
         }));
+        publish(TICKETS_CHANNEL, 'ticket-skipped', { id: ticketId });
       },
 
       updateConsultationNote: (ticketId, note) => {
@@ -258,16 +273,19 @@ export const useTicketStore = create<State>()(
               : t
           )
         }));
+        publish(TICKETS_CHANNEL, 'note-updated', { id: ticketId });
       },
 
-      setCounterAvailability: (counter, available) =>
+      setCounterAvailability: (counter, available) => {
         set((s) => ({
           counters: s.counters.map((cc) =>
             cc.counter === counter ? { ...cc, available } : cc
           )
-        })),
+        }));
+        publish(TICKETS_CHANNEL, 'counter-availability', { counter, available });
+      },
 
-      assignDoctorToCounter: (counter, doctorId, doctorName, department) =>
+      assignDoctorToCounter: (counter, doctorId, doctorName, department) => {
         set((s) => {
           // Enforce 1-doctor-1-counter: if this doctor already staffs another counter,
           // remove them from it first.
@@ -288,19 +306,25 @@ export const useTicketStore = create<State>()(
               return cc;
             })
           };
-        }),
+        });
+        publish(TICKETS_CHANNEL, 'counter-doctor-changed', { counter, doctorId });
+      },
 
-      addCounter: (counter) =>
+      addCounter: (counter) => {
         set((s) => ({
           counters: [...s.counters, { ...counter, currentTicketId: null }]
-        })),
+        }));
+        publish(TICKETS_CHANNEL, 'counter-added', { counter: counter.counter });
+      },
 
-      removeCounter: (counterNumber) =>
+      removeCounter: (counterNumber) => {
         set((s) => ({
           counters: s.counters.filter((c) => c.counter !== counterNumber)
-        })),
+        }));
+        publish(TICKETS_CHANNEL, 'counter-removed', { counter: counterNumber });
+      },
 
-      cancelTicket: (ticketId) =>
+      cancelTicket: (ticketId) => {
         set((s) => ({
           tickets: s.tickets.map((t) =>
             t.id === ticketId ? { ...t, status: 'cancelled' } : t
@@ -308,17 +332,21 @@ export const useTicketStore = create<State>()(
           counters: s.counters.map((cc) =>
             cc.currentTicketId === ticketId ? { ...cc, currentTicketId: null } : cc
           )
-        })),
+        }));
+        publish(TICKETS_CHANNEL, 'ticket-cancelled', { id: ticketId });
+      },
 
-      resetAll: () =>
+      resetAll: () => {
         set({
           tickets: seedTickets(),
           counters: initialCounters,
           seqByDept: { G: 130, A: 125, B: 123, O: 105, C: 88, P: 74, D: 52, N: 33, E: 48 }
-        })
+        });
+        publish(TICKETS_CHANNEL, 'reset');
+      }
     }),
     {
-      name: 'orh-tickets',
+      name: TICKETS_CHANNEL,
       storage: createJSONStorage(() =>
         typeof window === 'undefined' ? ({} as Storage) : window.localStorage
       )

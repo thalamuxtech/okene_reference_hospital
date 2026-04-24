@@ -68,7 +68,7 @@ export default function DoctorLoginPage() {
             </h1>
             <p className="mt-5 max-w-md text-base text-white/70">
               See your queue, call the next patient, view medical records and record consultation
-              notes — all in one secure clinical console built for Okene Reference Hospital.
+              notes — all in one secure clinical console built for CUSTECH Teaching Hospital, Okene.
             </p>
 
             <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
@@ -109,7 +109,7 @@ export default function DoctorLoginPage() {
               <div className="mb-6 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3">
                   <HospitalShield size={68} className="h-17 w-17" />
-                  <span className="text-sm font-bold text-slate-900">Okene Reference</span>
+                  <span className="text-sm font-bold text-slate-900">CUSTECH-TH</span>
                 </Link>
                 <span className="inline-flex items-center gap-1 rounded-full bg-primary-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                   <Stethoscope className="h-3 w-3" />

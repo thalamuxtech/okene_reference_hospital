@@ -22,6 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Input, Label, Textarea } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { usePatientsStore } from '@/lib/patients-store';
+import { useAppointmentsStore } from '@/lib/appointments-store';
 
 const STEPS = [
   { id: 1, label: 'Specialty', icon: Stethoscope },
@@ -41,6 +43,10 @@ type State = {
   symptoms: string;
   name: string;
   phone: string;
+  /** Verified patient ID once a lookup-by-phone succeeds, or a newly created
+   * patient record's ID. Required before the booking is confirmed so that
+   * the appointment is attached to a real record on the backend. */
+  patientId?: string;
 };
 
 export default function BookPage() {
@@ -117,14 +123,77 @@ function BookWizard() {
     setStep((s) => Math.max(1, s - 1));
   }
 
+  const findPatientByPhone = usePatientsStore((s) => s.findByPhone);
+  const addPatient = usePatientsStore((s) => s.add);
+  const addAppointment = useAppointmentsStore((s) => s.add);
+
   async function submit() {
+    if (!doctor || !state.date || !state.time) {
+      toast.error('Missing appointment details');
+      return;
+    }
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    const num = 'APT-2026-' + Math.floor(10000 + Math.random() * 89999);
-    setConfirmation(num);
-    setDone(true);
-    setSubmitting(false);
-    toast.success('Appointment booked!', { description: `Confirmation ${num} sent to your phone.` });
+    try {
+      // Resolve or create the patient record first. A registered patient
+      // matching this phone is re-used; otherwise we register them.
+      let patientId = state.patientId;
+      let resolvedName = state.name;
+      if (!patientId) {
+        const existing = findPatientByPhone(state.phone);
+        if (existing) {
+          patientId = existing.id;
+          resolvedName = existing.fullName;
+        } else {
+          const [firstName, ...rest] = state.name.trim().split(/\s+/);
+          const created = addPatient({
+            firstName: firstName || 'Guest',
+            lastName: rest.join(' ') || 'Patient',
+            phone: state.phone,
+            age: 0,
+            gender: 'Other',
+            bloodGroup: 'O+',
+            status: 'active'
+          });
+          patientId = created.id;
+          resolvedName = created.fullName;
+        }
+      }
+
+      const specialty = SPECIALTIES.find((s) => s.id === doctor.specialtyId);
+      const isTele = state.appointmentType === 'telehealth';
+
+      // Short "network" delay so the success UX feels intentional.
+      await new Promise((r) => setTimeout(r, 400));
+
+      const record = addAppointment({
+        patientId,
+        patientName: resolvedName,
+        patientPhone: state.phone,
+        doctorId: doctor.id,
+        doctorName: `${doctor.title ?? 'Dr.'} ${doctor.firstName} ${doctor.lastName}`,
+        specialty: specialty?.name ?? doctor.specialization[0],
+        date: state.date,
+        time: state.time,
+        type: isTele ? 'telehealth' : state.appointmentType === 'follow_up' ? 'follow_up' : 'in-person',
+        reason: state.reason,
+        symptoms: state.symptoms,
+        fee: isTele ? doctor.telehealthFee : doctor.consultationFee,
+        status: 'scheduled',
+        createdBy: 'patient'
+      });
+
+      setConfirmation(record.id);
+      setState((s) => ({ ...s, patientId }));
+      setDone(true);
+      toast.success('Appointment booked!', {
+        description: `Confirmation ${record.id} · we’ll send an SMS to ${state.phone}.`
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not complete booking — try again.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (done) return <BookingSuccess number={confirmation} state={state} doctor={doctor} />;
@@ -531,13 +600,14 @@ function StepDetails({
         </div>
       </div>
 
+      <PhoneLookup state={state} onChange={onChange} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="name">Patient name</Label>
           <Input
             id="name"
             value={state.name}
-            onChange={(e) => onChange({ name: e.target.value })}
+            onChange={(e) => onChange({ name: e.target.value, patientId: undefined })}
             placeholder="Full name"
           />
         </div>
@@ -546,7 +616,7 @@ function StepDetails({
           <Input
             id="phone"
             value={state.phone}
-            onChange={(e) => onChange({ phone: e.target.value })}
+            onChange={(e) => onChange({ phone: e.target.value, patientId: undefined })}
             placeholder="+234 803 000 0000"
           />
         </div>
@@ -573,6 +643,75 @@ function StepDetails({
           placeholder="List any symptoms you are experiencing…"
         />
       </div>
+    </div>
+  );
+}
+
+function PhoneLookup({
+  state,
+  onChange
+}: {
+  state: State;
+  onChange: (p: Partial<State>) => void;
+}) {
+  const findByPhone = usePatientsStore((s) => s.findByPhone);
+  const [lookup, setLookup] = useState('');
+  const [status, setStatus] = useState<'idle' | 'found' | 'missing'>('idle');
+
+  function runLookup() {
+    const phone = lookup.trim() || state.phone;
+    if (!phone) {
+      toast.error('Enter a phone number first');
+      return;
+    }
+    const match = findByPhone(phone);
+    if (match) {
+      onChange({
+        name: match.fullName,
+        phone: match.phone,
+        patientId: match.id
+      });
+      setStatus('found');
+      toast.success(`Welcome back, ${match.firstName}!`, {
+        description: `Patient ID ${match.id}`
+      });
+    } else {
+      onChange({ phone, patientId: undefined });
+      setStatus('missing');
+    }
+  }
+
+  return (
+    <div className="rounded-xl border-2 border-dashed border-primary-200 bg-primary-50/40 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">
+        Already registered?
+      </p>
+      <p className="mt-0.5 text-xs text-slate-600">
+        Enter your phone to pre-fill your details, or leave blank and we&apos;ll register you now.
+      </p>
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <Input
+          value={lookup}
+          onChange={(e) => {
+            setLookup(e.target.value);
+            setStatus('idle');
+          }}
+          placeholder="+234 803 000 0000"
+        />
+        <Button variant="outline" onClick={runLookup}>
+          Look up patient
+        </Button>
+      </div>
+      {status === 'found' && state.patientId && (
+        <p className="mt-2 text-xs font-semibold text-emerald-700">
+          ✓ Matched · {state.patientId}
+        </p>
+      )}
+      {status === 'missing' && (
+        <p className="mt-2 text-xs text-amber-700">
+          No matching patient. We&apos;ll register a new record when you confirm.
+        </p>
+      )}
     </div>
   );
 }

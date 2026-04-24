@@ -3,10 +3,10 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * Official Okene Reference Hospital logo (public/orh-logo.png).
- * The mark scale is controlled by `size` (px) so callers can render an
- * oversized "hanging" logo in the header hero and a smaller one when
- * scrolled. Exported also as HospitalShield for backwards-compatibility.
+ * Official CUSTECH-TH logo (public/custechth-logo.png).
+ * Scale controlled by `size` so callers can render an oversized "hanging"
+ * logo in the header hero and a smaller one when scrolled.
+ * Exported also as HospitalShield for backwards-compatibility.
  */
 export function HospitalShield({
   className,
@@ -18,8 +18,8 @@ export function HospitalShield({
 }) {
   return (
     <Image
-      src="/orh-logo.png"
-      alt="Okene Reference Hospital"
+      src="/custechth-logo.png"
+      alt="CUSTECH Teaching Hospital, Okene"
       width={size * 2}
       height={size * 2}
       className={cn('drop-shadow-sm', className)}
@@ -44,9 +44,9 @@ export function Logo({
   wordmarkSize?: 'sm' | 'md' | 'lg';
 }) {
   const wm = {
-    sm: { title: 'text-[13px]', sub: 'text-[10px]' },
-    md: { title: 'text-[15px]', sub: 'text-[11px]' },
-    lg: { title: 'text-lg', sub: 'text-xs' }
+    sm: { title: 'text-[13px]', sub: 'text-[9px]' },
+    md: { title: 'text-[15px]', sub: 'text-[10px]' },
+    lg: { title: 'text-lg', sub: 'text-[11px]' }
   }[wordmarkSize];
 
   return (
@@ -55,7 +55,7 @@ export function Logo({
         <HospitalShield size={size} />
       </span>
       {showWordmark && (
-        <span className="flex flex-col leading-none">
+        <span className="flex flex-col leading-tight">
           <span
             className={cn(
               'font-bold tracking-tight',
@@ -63,16 +63,25 @@ export function Logo({
               variant === 'light' ? 'text-white' : 'text-slate-900'
             )}
           >
-            Okene Reference
+            CUSTECH
           </span>
           <span
             className={cn(
-              'mt-1 font-semibold uppercase tracking-[0.2em]',
+              'font-semibold tracking-tight',
+              wm.title,
+              variant === 'light' ? 'text-white/90' : 'text-slate-800'
+            )}
+          >
+            Teaching Hospital
+          </span>
+          <span
+            className={cn(
+              'mt-0.5 font-semibold uppercase tracking-[0.2em]',
               wm.sub,
               variant === 'light' ? 'text-primary-200' : 'text-primary-600'
             )}
           >
-            Hospital
+            Okene · Kogi
           </span>
         </span>
       )}

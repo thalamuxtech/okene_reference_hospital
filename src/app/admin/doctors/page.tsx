@@ -156,44 +156,45 @@ export default function AdminDoctorsPage() {
         {list.map((d) => (
           <div
             key={d.id}
-            className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
-            <div className="relative h-20 bg-gradient-to-br from-primary-500 to-navy-500">
+            <div className="relative flex justify-center pt-6 pb-3">
+              <Image
+                src={d.photoURL}
+                alt={d.firstName}
+                width={96}
+                height={96}
+                className="h-24 w-24 rounded-full object-cover ring-4 ring-white shadow-lg transition-transform duration-500 group-hover:scale-105"
+                unoptimized
+              />
               <div className="absolute right-3 top-3 flex gap-1">
                 <button
                   onClick={() => openEdit(d)}
-                  className="rounded-lg bg-white/20 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
+                  className="rounded-lg bg-slate-100 p-1.5 text-slate-600 transition-colors hover:bg-primary-500 hover:text-white"
                   aria-label="Edit"
                 >
                   <Edit2 className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => del(d)}
-                  className="rounded-lg bg-white/20 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-red-500"
+                  className="rounded-lg bg-slate-100 p-1.5 text-slate-600 transition-colors hover:bg-red-500 hover:text-white"
                   aria-label="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
-            <div className="-mt-10 p-5">
-              <Image
-                src={d.photoURL}
-                alt={d.firstName}
-                width={72}
-                height={72}
-                className="h-[72px] w-[72px] rounded-full object-cover ring-4 ring-white"
-                unoptimized
-              />
-              <h3 className="mt-3 text-base font-bold text-slate-900">
+            <div className="h-1.5 bg-gradient-to-br from-primary-500 to-navy-500" />
+            <div className="p-5">
+              <h3 className="text-center text-base font-bold text-slate-900">
                 {d.title ?? 'Dr.'} {d.firstName} {d.lastName}
               </h3>
-              <p className="mt-0.5 text-xs text-primary-600">
+              <p className="mt-0.5 text-center text-xs text-primary-600">
                 {d.qualification.join(', ') || '—'}
               </p>
-              <p className="mt-0.5 text-xs text-slate-600">{d.department}</p>
+              <p className="mt-0.5 text-center text-xs text-slate-600">{d.department}</p>
 
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600">
                 <span className="inline-flex items-center gap-1">
                   <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                   {d.averageRating.toFixed(2)} ({d.totalReviews})
@@ -202,7 +203,7 @@ export default function AdminDoctorsPage() {
                 <span>{d.yearsOfExperience}y</span>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-1.5">
+              <div className="mt-3 flex flex-wrap justify-center gap-1.5">
                 {d.telehealthAvailable && (
                   <Badge variant="purple">
                     <Video className="h-3 w-3" /> Telehealth

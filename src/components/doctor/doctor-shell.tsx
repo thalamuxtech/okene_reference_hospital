@@ -113,7 +113,7 @@ export function DoctorShell({
                   className="flex flex-col overflow-hidden leading-none"
                 >
                   <span className="text-sm font-bold tracking-tight text-slate-900">
-                    Okene Reference
+                    CUSTECH-TH
                   </span>
                   <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary-600">
                     Doctor Portal

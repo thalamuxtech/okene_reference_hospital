@@ -76,7 +76,7 @@ export function Hero() {
       {/* Top glass announcement bar */}
       <div className="relative z-10 border-b border-white/5">
         <div className="container flex h-10 items-center justify-between text-[11px] uppercase tracking-[0.18em] text-white/60">
-          <span className="hidden sm:inline">Okene · Kogi Central · Est. 1998</span>
+          <span className="hidden sm:inline">CUSTECH-TH · Okene, Kogi · Est. 2024</span>
           <span className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-semibold text-emerald-300">
               <span className="relative flex h-1.5 w-1.5">
@@ -286,7 +286,7 @@ function HeroPortrait({ y }: { y: any }) {
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-primary-200">
                   Featured consultant
                 </p>
-                <p className="truncate text-sm font-bold text-white">Prof. Salihu Avidime · CMD</p>
+                <p className="truncate text-sm font-bold text-white">Prof. Solomon Avidime · CMD</p>
               </div>
               <div className="flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-[10px] font-bold text-amber-300">
                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
@@ -360,7 +360,7 @@ function HeroPortrait({ y }: { y: any }) {
               Next available
             </p>
           </div>
-          <p className="mt-2 text-sm font-bold">Prof. Salihu Avidime</p>
+          <p className="mt-2 text-sm font-bold">Prof. Solomon Avidime</p>
           <p className="text-[11px] text-white/60">Obstetrics · Consultant</p>
           <div className="mt-3 grid grid-cols-3 gap-1.5 text-center text-[10px]">
             {['09:30', '10:30', '14:00'].map((t, i) => (

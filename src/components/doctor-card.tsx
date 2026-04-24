@@ -80,7 +80,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
 
           <div className="flex gap-2">
             <Link
-              href={`/doctors/${doctor.id}`}
+              href={`/doctors/profile?id=${encodeURIComponent(doctor.id)}`}
               className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-primary-500 hover:text-primary-600"
             >
               Profile

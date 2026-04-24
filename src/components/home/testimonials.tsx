@@ -49,7 +49,7 @@ export function Testimonials() {
           </h2>
           <p className="mt-4 text-base text-slate-300 lg:text-lg">
             Real stories from Ebira sons and daughters and neighbours across Kogi who now rely on
-            Okene Reference Hospital as their home for care.
+            CUSTECH Teaching Hospital, Okene as their home for care.
           </p>
         </div>
 

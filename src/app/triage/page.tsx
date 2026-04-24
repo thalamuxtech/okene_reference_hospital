@@ -60,7 +60,7 @@ export default function TriagePage() {
     {
       role: 'assistant',
       text:
-        "Sannu! I'm Omeiza, your Okene Reference Hospital AI triage assistant. In a few sentences, tell me what brings you here today. I'll ask clinical follow-up questions and guide you to the right next step. I will never diagnose or prescribe."
+        "Sannu! I'm Omeiza, your CUSTECH-TH AI triage assistant. In a few sentences, tell me what brings you here today. I'll ask clinical follow-up questions and guide you to the right next step. I will never diagnose or prescribe."
     }
   ]);
   const [input, setInput] = useState('');
@@ -167,14 +167,14 @@ export default function TriagePage() {
         />
       </div>
 
-      <div className="container pt-14 pb-20 text-white lg:pt-20">
+      <div className="container pt-28 pb-20 text-white lg:pt-40">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.3fr]">
           {/* Left column — narrative */}
           <div className="relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-200 backdrop-blur"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-200 backdrop-blur lg:mt-10"
             >
               <Sparkles className="h-3.5 w-3.5" />
               Clinical AI triage
@@ -184,7 +184,7 @@ export default function TriagePage() {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 }}
-              className="mt-6 text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[58px]"
+              className="mt-10 text-4xl font-bold leading-[1.04] tracking-tight sm:text-5xl lg:text-[58px]"
             >
               A real conversation.{' '}
               <span className="bg-gradient-to-r from-primary-300 via-white to-amber-200 bg-clip-text text-transparent">

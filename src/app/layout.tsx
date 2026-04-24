@@ -20,13 +20,15 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Okene Reference Hospital — Premium Medical Care for Ebira Land & Kogi Central',
-    template: '%s · Okene Reference Hospital'
+    default: 'CUSTECH Teaching Hospital, Okene — Premium Medical Care for Kogi Central',
+    template: '%s · CUSTECH-TH Okene'
   },
   description:
-    'The heart of healthcare in Okene. Book appointments, consult Nigeria\'s top specialists online or by SMS, and access 24/7 emergency care. Serving the Ebira people and all of Kogi State — Adavi, Okehi, Ajaokuta, Ihima, Ogori-Magongo and beyond.',
+    'Confluence University of Science and Technology Teaching Hospital, Okene (CUSTECH-TH). Book appointments, consult top specialists online or by SMS, and access 24/7 emergency care. Serving Okene, Adavi, Okehi, Ajaokuta, Ihima, Ogori-Magongo and all of Kogi State.',
   keywords: [
-    'Okene Reference Hospital',
+    'CUSTECH Teaching Hospital',
+    'CUSTECH-TH',
+    'Confluence University of Science and Technology Teaching Hospital',
     'Okene hospital',
     'Ebira health',
     'Kogi Central hospital',
@@ -39,9 +41,9 @@ export const metadata: Metadata = {
     'appointment booking Nigeria',
     'emergency Kogi'
   ],
-  metadataBase: new URL('https://okenereferencehospital.web.app'),
+  metadataBase: new URL('https://custechth.org'),
   openGraph: {
-    title: 'Okene Reference Hospital',
+    title: 'CUSTECH Teaching Hospital, Okene (CUSTECH-TH)',
     description: 'Premium medical care for the Kogi Central community.',
     type: 'website'
   }

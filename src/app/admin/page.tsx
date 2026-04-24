@@ -45,7 +45,7 @@ export default function AdminHome() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Good afternoon, Administrator</h1>
-          <p className="mt-1 text-sm text-slate-600">Here&apos;s what&apos;s happening across Okene Reference Hospital today.</p>
+          <p className="mt-1 text-sm text-slate-600">Here&apos;s what&apos;s happening across CUSTECH-TH Okene today.</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">

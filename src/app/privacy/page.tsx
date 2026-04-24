@@ -7,7 +7,8 @@ export default function PrivacyPage() {
       <p className="mt-2 text-sm text-slate-500">Last updated: April 2026</p>
       <div className="prose prose-slate mt-8 max-w-none">
         <p>
-          Okene Reference Hospital (&ldquo;ORH&rdquo;) is committed to protecting your privacy. This
+          Confluence University of Science and Technology Teaching Hospital, Okene
+          (&ldquo;CUSTECH-TH&rdquo;) is committed to protecting your privacy. This
           policy describes how we collect, use and safeguard personal and medical information in
           accordance with the Nigeria Data Protection Regulation (NDPR) and aligned international
           standards.

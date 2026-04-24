@@ -7,7 +7,7 @@ export default function TermsPage() {
       <p className="mt-2 text-sm text-slate-500">Last updated: April 2026</p>
       <div className="prose prose-slate mt-8 max-w-none">
         <p>
-          By using Okene Reference Hospital&apos;s digital services you agree to these terms. Services
+          By using CUSTECH Teaching Hospital, Okene&apos;s digital services you agree to these terms. Services
           are provided for the benefit of patients and licensed healthcare professionals.
         </p>
         <h2 className="mt-10 text-xl font-bold text-slate-900">Medical disclaimer</h2>

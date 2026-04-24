@@ -85,7 +85,7 @@ export default function TelehealthPage() {
               transition={{ delay: 0.2 }}
               className="mt-5 text-base text-white/80 lg:text-lg"
             >
-              HD video consultations with real Okene Reference Hospital specialists — plus SMS
+              HD video consultations with real CUSTECH-TH specialists — plus SMS
               fallback for areas with poor connectivity.
             </motion.p>
             <motion.div

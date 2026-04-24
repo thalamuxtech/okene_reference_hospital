@@ -23,8 +23,9 @@ export default function AboutPage() {
                 <span className="text-gradient">Ebira land.</span> Built for the world.
               </h1>
               <p className="mt-6 text-base text-slate-600 lg:text-lg">
-                Okene Reference Hospital has been the heart of healthcare in Okene and the
-                surrounding Ebira communities for over 27 years. We combine deep clinical experience
+                Confluence University of Science and Technology Teaching Hospital, Okene
+                (CUSTECH-TH) is the heart of advanced healthcare for Okene and the surrounding Ebira
+                communities. We combine deep clinical experience
                 with a modern, patient-first digital platform — so quality care is never more than
                 a tap, a text, or a call away, whether you are in Okene, Adavi, Okehi, Ihima,
                 Ajaokuta or anywhere else in Kogi State.

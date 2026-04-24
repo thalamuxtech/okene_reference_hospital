@@ -221,7 +221,7 @@ export default function ArrivalPage() {
                   >
                     <div className="border-b-2 border-dashed border-slate-300 bg-white p-5 text-center">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                        Okene Reference Hospital
+                        CUSTECH-TH · Okene
                       </p>
                       <p className="mt-0.5 text-[10px] text-slate-400">Queue ticket</p>
                       <p className="mt-3 font-mono text-6xl font-black tracking-tight text-slate-900">

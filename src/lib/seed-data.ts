@@ -105,12 +105,12 @@ export type Doctor = {
 
 export const DOCTORS: Doctor[] = [
   {
-    id: 'prof-avidime-salihu',
+    id: 'prof-avidime-solomon',
     doctorId: 'DR-00101',
-    firstName: 'Salihu',
+    firstName: 'Solomon',
     lastName: 'Avidime',
     title: 'Prof.',
-    photoURL: 'https://ui-avatars.com/api/?name=Salihu+Avidime&size=400&background=12266B&color=ffffff&bold=true&format=png',
+    photoURL: 'https://ui-avatars.com/api/?name=Solomon+Avidime&size=400&background=12266B&color=ffffff&bold=true&format=png',
     qualification: ['MBBS', 'FWACS', 'FMCS', 'PhD'],
     specialization: ['Obstetrics & Gynaecology'],
     specialtyId: 'obstetrics',
@@ -122,7 +122,7 @@ export const DOCTORS: Doctor[] = [
     totalReviews: 412,
     totalPatientsSeen: 8200,
     languages: ['English', 'Ebira', 'Hausa', 'Yoruba'],
-    bio: 'Professor of Obstetrics & Gynaecology and Chief Medical Director of Okene Reference Hospital. Fellow of the West African College of Surgeons, with over 28 years advancing safe motherhood across Kogi Central. Leads the high-risk pregnancy unit and the hospital-wide clinical governance board.',
+    bio: 'Professor of Obstetrics & Gynaecology and Chief Medical Director of CUSTECH Teaching Hospital, Okene. Fellow of the West African College of Surgeons, with over 28 years advancing safe motherhood across Kogi Central. Leads the high-risk pregnancy unit and the hospital-wide clinical governance board.',
     department: 'Obstetrics & Gynaecology',
     position: 'Chief Medical Director',
     workingDays: ['MON', 'TUE', 'WED', 'THU', 'FRI'],

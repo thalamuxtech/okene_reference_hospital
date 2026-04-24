@@ -394,7 +394,7 @@ function RegisterSuccess({ id, name }: { id: string; name: string }) {
 
       <h1 className="mt-6 text-2xl font-bold text-slate-900 sm:text-3xl">Welcome, {name}!</h1>
       <p className="mt-2 text-sm text-slate-600">
-        Your Okene Reference Hospital account is ready.
+        Your CUSTECH Teaching Hospital account is ready.
       </p>
 
       <div className="mx-auto mt-6 max-w-xs rounded-xl bg-primary-50 p-4">

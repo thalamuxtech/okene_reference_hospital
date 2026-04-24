@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,7 +26,11 @@ import { Button } from '@/components/ui/button';
 
 export default function DoctorProfileClient() {
   const params = useParams<{ id: string }>();
-  const id = params?.id;
+  const search = useSearchParams();
+  // Support both the dynamic `/doctors/[id]` route (when the ID was
+  // pre-rendered at build time) and the static-export fallback route
+  // `/doctors/profile?id=…` used for admin-added or renamed doctors.
+  const id = params?.id ?? search.get('id') ?? undefined;
 
   // Hydrate from persisted admin-edited store, fall back to seed. Only merge
   // after mount so we never render a mismatched tree during SSG hydration.
@@ -212,7 +216,7 @@ export default function DoctorProfileClient() {
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-slate-600">
                     <MapPin className="h-4 w-4 text-slate-400" />
-                    Okene Reference Hospital
+                    CUSTECH Teaching Hospital, Okene
                   </div>
                   <div className="flex items-center gap-2 text-slate-600">
                     <Languages className="h-4 w-4 text-slate-400" />

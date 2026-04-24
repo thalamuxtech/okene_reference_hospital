@@ -57,7 +57,7 @@ export function SiteHeader() {
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, []);
-  const logoSize = scrolled ? (isDesktop ? 64 : 48) : isDesktop ? 124 : 84;
+  const logoSize = scrolled ? (isDesktop ? 80 : 60) : isDesktop ? 168 : 112;
 
   return (
     <header
@@ -73,11 +73,11 @@ export function SiteHeader() {
       <div
         className={cn(
           'container relative flex items-center justify-between transition-all duration-500',
-          scrolled ? 'h-[88px]' : 'h-28 lg:h-32'
+          scrolled ? 'h-[96px]' : 'h-32 lg:h-40'
         )}
       >
         {/* Logo slot — oversized logo hangs ~60% below the bar when at rest. */}
-        <Link href="/" aria-label="Okene Reference Hospital — home" className="relative flex items-center gap-3 group">
+        <Link href="/" aria-label="CUSTECH Teaching Hospital, Okene — home" className="relative flex items-center gap-3 group">
           <motion.span
             initial={false}
             animate={{
@@ -92,32 +92,41 @@ export function SiteHeader() {
               size={logoSize}
               className={cn(
                 'h-full w-full transition-shadow duration-500',
-                !scrolled && 'drop-shadow-[0_14px_30px_rgba(12,38,107,0.45)]'
+                !scrolled && 'animate-float-slow drop-shadow-[0_18px_40px_rgba(12,38,107,0.5)]'
               )}
             />
           </motion.span>
           <motion.span
             initial={false}
             animate={{ opacity: scrolled ? 1 : 0.95 }}
-            className="flex flex-col leading-none"
+            className="flex flex-col leading-tight"
           >
             <span
               className={cn(
-                'font-bold tracking-tight transition-all duration-500',
-                scrolled ? 'text-[15px]' : 'text-[17px] lg:text-[19px]',
+                'font-extrabold tracking-tight transition-all duration-500',
+                scrolled ? 'text-[16px]' : 'text-[18px] lg:text-[22px]',
                 light ? 'text-white' : 'text-slate-900'
               )}
             >
-              Okene Reference
+              CUSTECH
             </span>
             <span
               className={cn(
-                'mt-1 font-semibold uppercase tracking-[0.22em] transition-all duration-500',
-                scrolled ? 'text-[11px]' : 'text-[12px]',
+                'font-semibold tracking-tight transition-all duration-500',
+                scrolled ? 'text-[13px]' : 'text-[14px] lg:text-[16px]',
+                light ? 'text-white/90' : 'text-slate-800'
+              )}
+            >
+              Teaching Hospital
+            </span>
+            <span
+              className={cn(
+                'mt-0.5 font-semibold uppercase tracking-[0.22em] transition-all duration-500',
+                scrolled ? 'text-[10px]' : 'text-[11px]',
                 light ? 'text-primary-200' : 'text-primary-600'
               )}
             >
-              Hospital
+              Okene · Kogi
             </span>
           </motion.span>
         </Link>
@@ -165,14 +174,14 @@ export function SiteHeader() {
           <Link
             href="/book"
             className={cn(
-              'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]',
+              'btn-sheen inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]',
               light
-                ? 'bg-white text-slate-900 shadow-lg hover:shadow-xl'
-                : 'bg-primary-500 text-white shadow-sm hover:bg-primary-600 hover:shadow-md'
+                ? 'bg-white text-slate-900 shadow-lg hover:-translate-y-0.5 hover:shadow-xl'
+                : 'bg-primary-500 text-white premium-glow hover:-translate-y-0.5 hover:bg-primary-600'
             )}
           >
             <Calendar className="h-4 w-4" />
-            Book Appointment
+            <span className="relative">Book Appointment</span>
           </Link>
         </div>
 

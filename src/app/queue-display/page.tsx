@@ -1,18 +1,29 @@
 'use client';
 
-import { useTicketStore, type Ticket } from '@/lib/ticket-store';
+import { useTicketStore, TICKETS_CHANNEL, type Ticket } from '@/lib/ticket-store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Maximize2, Minimize2, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { announceTicket, ensureVoicesReady, stopSpeaking } from '@/lib/announcer';
+import { useStoreSync } from '@/lib/use-store-sync';
 
 export default function QueueDisplayPage() {
   const tickets = useTicketStore((s) => s.tickets);
   const counters = useTicketStore((s) => s.counters);
 
+  // Pick up ticket/counter changes made in other tabs or by the doctor/admin
+  // console so the TV display updates in real time without a manual refresh.
+  useStoreSync(TICKETS_CHANNEL, () => useTicketStore.persist.rehydrate());
+
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
+  }, []);
+
+  // Warm up the speech synthesis voices list.
+  useEffect(() => {
+    ensureVoicesReady();
   }, []);
 
   const [isFs, setIsFs] = useState(false);
@@ -37,26 +48,20 @@ export default function QueueDisplayPage() {
 
   const speakTicket = useCallback(
     (t: Ticket, counterNumber?: number) => {
-      if (!voiceOn || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-      const say = (text: string) => {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'en-NG';
-        u.rate = 0.9;
-        u.pitch = 1;
-        window.speechSynthesis.speak(u);
-      };
-      // Spell out the ticket number letter by letter for clarity
-      const spelled = t.number
-        .split('')
-        .map((c) => (c === '-' ? '' : c))
-        .join(' ');
-      const counterTxt = counterNumber ? `to counter ${counterNumber}` : '';
-      say(`Ticket ${spelled}, ${t.patientName}, please proceed ${counterTxt}.`);
+      if (!voiceOn) return;
+      announceTicket(t.number, counterNumber ?? t.counter, { repeat: 2 });
     },
     [voiceOn]
   );
 
-  // Auto-announce when a new ticket is called
+  // Stop any in-flight speech when the operator mutes voice.
+  useEffect(() => {
+    if (!voiceOn) stopSpeaking();
+  }, [voiceOn]);
+
+  // Auto-announce when a new ticket transitions to `called`. This listens to
+  // the reactive `tickets` selector, which re-fires whenever any tab calls
+  // the next patient (thanks to the BroadcastChannel rehydrate above).
   useEffect(() => {
     const calledIds = new Set<string>();
     tickets
@@ -82,11 +87,9 @@ export default function QueueDisplayPage() {
         b.priority - a.priority !== 0 ? b.priority - a.priority : a.arrivedAt - b.arrivedAt
       )[0];
     if (!next) {
-      if (voiceOn && 'speechSynthesis' in window) {
-        const u = new SpeechSynthesisUtterance('No patients currently in the queue.');
-        u.lang = 'en-NG';
-        window.speechSynthesis.speak(u);
-      }
+      const u = new SpeechSynthesisUtterance('No patients currently in the queue.');
+      u.lang = 'en-NG';
+      window.speechSynthesis?.speak(u);
       return;
     }
     speakTicket(next);
@@ -118,7 +121,7 @@ export default function QueueDisplayPage() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary-200">
-              Okene Reference Hospital · Live queue
+              CUSTECH Teaching Hospital, Okene · Live queue
             </p>
             <h1 className="mt-1 text-3xl font-bold lg:text-5xl">Now serving</h1>
           </div>
@@ -248,7 +251,7 @@ export default function QueueDisplayPage() {
         </div>
 
         <div className="mt-4 text-center text-xs text-white/30">
-          Emergency · 112 · care@okenehospital.ng
+          Emergency · 112 · +234-706-950-7035 · care@okenehospital.ng
         </div>
       </div>
     </div>

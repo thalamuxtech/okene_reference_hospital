@@ -125,11 +125,11 @@ export function Splash() {
                 className="absolute inset-0 -m-8 rounded-full bg-gradient-to-br from-primary-500/40 to-navy-500/40 blur-2xl"
               />
               <Image
-                src="/orh-logo.png"
-                alt="Okene Reference Hospital"
-                width={180}
-                height={180}
-                className="relative h-40 w-40 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:h-44 sm:w-44"
+                src="/custechth-logo.png"
+                alt="CUSTECH Teaching Hospital, Okene"
+                width={220}
+                height={220}
+                className="relative h-48 w-48 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:h-56 sm:w-56"
                 priority
                 unoptimized
               />
@@ -144,7 +144,7 @@ export function Splash() {
             className="absolute bottom-16 left-0 right-0 text-center"
           >
             <p className="text-[10px] font-semibold uppercase tracking-[0.45em] text-primary-200">
-              Okene Reference Hospital
+              CUSTECH Teaching Hospital · Okene
             </p>
             <p className="mt-1 text-[11px] text-white/50">Trusted. Professional. Accessible.</p>
           </motion.div>

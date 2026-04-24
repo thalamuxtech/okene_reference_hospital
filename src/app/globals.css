@@ -138,6 +138,49 @@
   .label {
     @apply mb-1.5 block text-sm font-semibold text-slate-700;
   }
+
+  /* Premium sheen overlay — sweep light across a button/card on hover */
+  .btn-sheen {
+    @apply relative overflow-hidden;
+  }
+  .btn-sheen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .btn-sheen:hover::before {
+    transform: translateX(120%);
+  }
+
+  /* Soft premium drop glow under a primary button/card */
+  .premium-glow {
+    box-shadow:
+      0 10px 30px -12px rgba(0, 139, 139, 0.45),
+      0 4px 12px -4px rgba(12, 38, 107, 0.25);
+  }
+  .premium-glow:hover {
+    box-shadow:
+      0 14px 40px -12px rgba(0, 139, 139, 0.55),
+      0 6px 16px -4px rgba(12, 38, 107, 0.35);
+  }
+
+  /* Subtle continuous float for the oversized hero logo */
+  @keyframes premium-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .animate-float-slow {
+    animation: premium-float 6s ease-in-out infinite;
+  }
 }
 
 @layer utilities {
