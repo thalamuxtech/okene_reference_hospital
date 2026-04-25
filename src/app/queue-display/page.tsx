@@ -92,7 +92,12 @@ export default function QueueDisplayPage() {
       window.speechSynthesis?.speak(u);
       return;
     }
-    speakTicket(next);
+    // Pick the first vacant counter in that ticket's department so the
+    // announcement tells the patient which counter to walk to.
+    const vacantCounter = counters.find(
+      (c) => c.available && !c.currentTicketId && c.department === next.department
+    )?.counter;
+    speakTicket(next, vacantCounter);
   }
 
   const called = tickets.filter((t) => t.status === 'called' || t.status === 'in_consultation');

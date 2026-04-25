@@ -63,7 +63,9 @@ export function formatTicketAnnouncement(
   // Preserve the hyphen as a pause: "G-123" => "G, 1 2 3"
   const [prefix, digits = ''] = ticketNumber.split('-');
   const spelled = digits.split('').join(' ');
-  const counterTxt = counterNumber ? `please proceed to counter ${counterNumber}` : 'please proceed to the counter';
+  const counterTxt = counterNumber
+    ? `please proceed to Counter ${counterNumber}`
+    : 'please proceed to the counter';
   return `Ticket ${prefix} ${spelled}, ${counterTxt}.`;
 }
 
